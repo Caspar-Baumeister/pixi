@@ -1,0 +1,51 @@
+name: pixi
+description: "Pixi – My Year in Pixels. Ein Jahr, ein Bild, ein Pixel pro Tag."
+publish_to: "none"
+version: 1.0.0+1
+
+environment:
+  sdk: ">=3.4.0 <4.0.0"
+  flutter: ">=3.27.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_localizations:
+    sdk: flutter
+  flutter_riverpod: ^2.6.1
+  path_provider: ^2.1.4
+  share_plus: ^10.1.4
+  flutter_local_notifications: ^17.2.4
+  timezone: ^0.9.4
+  flutter_timezone: ^3.0.1
+  url_launcher: ^6.3.1
+  purchases_flutter: ^9.0.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^4.0.0
+  flutter_launcher_icons: ^0.14.1
+
+flutter_launcher_icons:
+  android: true
+  ios: true
+  remove_alpha_ios: true
+  image_path: "assets/icon/icon.png"
+  adaptive_icon_background: "#FAF9F6"
+  adaptive_icon_foreground: "assets/icon/icon_fg.png"
+
+flutter:
+  uses-material-design: true
+
+  assets:
+    - assets/cats/
+    - assets/icon/
+
+  fonts:
+    - family: Fraunces
+      fonts:
+        - asset: assets/fonts/Fraunces-Variable.ttf
+    - family: Manrope
+      fonts:
+        - asset: assets/fonts/Manrope-Variable.ttf

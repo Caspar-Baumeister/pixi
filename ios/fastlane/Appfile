@@ -1,0 +1,2 @@
+app_identifier("com.casparbaumeister.pixi") # Pixi bundle ID
+team_id("Y9DDN4R763")                         # Apple Developer team

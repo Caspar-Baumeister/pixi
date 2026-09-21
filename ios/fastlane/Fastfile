@@ -1,0 +1,162 @@
+# Pixi — iOS deployment lanes
+#
+# Auth: App Store Connect API key (.p8) configured in ios/fastlane/.env
+#   ASC_KEY_ID, ASC_ISSUER_ID, ASC_KEY_PATH  (see .env.example)
+#
+# Usage (from the ios/ directory):
+#   fastlane release    # build + upload binary AND metadata/screenshots (no auto-submit)
+#   fastlane beta       # build + upload to TestFlight
+#   fastlane metadata   # only texts + screenshots (fastlane/metadata, fastlane/screenshots)
+#   fastlane build      # just produce a signed .ipa
+#   fastlane status     # check the App Store Connect record
+
+require "shellwords"
+
+default_platform(:ios)
+
+REPO_ROOT = File.expand_path("../..", __dir__)
+IPA_DIR   = File.expand_path("build/ios/ipa", REPO_ROOT)
+IPA_NAME  = "Pixi.ipa"
+APP_ID    = "com.casparbaumeister.pixi"
+
+def pubspec_version
+  line = File.read(File.join(REPO_ROOT, "pubspec.yaml"))
+             .lines.find { |l| l =~ /^\s*version:\s*/ }
+  raise "No version: in pubspec.yaml" unless line
+  line.sub(/^\s*version:\s*/, "").strip.split("+").first
+end
+
+# flutter/pod must run outside fastlane's bundler environment.
+def with_clean_env(&block)
+  if defined?(Bundler) && Bundler.respond_to?(:with_unbundled_env)
+    Bundler.with_unbundled_env(&block)
+  elsif defined?(Bundler) && Bundler.respond_to?(:with_original_env)
+    Bundler.with_original_env(&block)
+  else
+    block.call
+  end
+end
+
+def asc_token
+  require "spaceship"
+  Spaceship::ConnectAPI::Token.create(
+    key_id:    ENV.fetch("ASC_KEY_ID"),
+    issuer_id: ENV.fetch("ASC_ISSUER_ID"),
+    filepath:  File.expand_path(ENV.fetch("ASC_KEY_PATH"), __dir__)
+  )
+end
+
+def ensure_bundle_id_registered(identifier, name)
+  Spaceship::ConnectAPI.token = asc_token
+  if Spaceship::ConnectAPI::BundleId.all.any? { |b| b.identifier == identifier }
+    UI.message("Bundle ID #{identifier} already registered.")
+  else
+    Spaceship::ConnectAPI::BundleId.create(name: name, identifier: identifier, platform: "IOS")
+    UI.success("Registered Bundle ID #{identifier}.")
+  end
+end
+
+platform :ios do
+  before_all do
+    app_store_connect_api_key(
+      key_id:       ENV.fetch("ASC_KEY_ID"),
+      issuer_id:    ENV.fetch("ASC_ISSUER_ID"),
+      key_filepath: File.expand_path(ENV.fetch("ASC_KEY_PATH"), __dir__),
+      in_house:     false
+    )
+  end
+
+  desc "Show the App Store Connect app record for this bundle ID"
+  lane :status do
+    Spaceship::ConnectAPI.token = asc_token
+    app = Spaceship::ConnectAPI::App.find(APP_ID)
+    if app
+      UI.success("Found app: '#{app.name}'  #{app.bundle_id}  id=#{app.id}")
+    else
+      UI.error("No App Store Connect record for #{APP_ID}")
+    end
+  end
+
+  desc "Build a signed App Store .ipa"
+  lane :build do |options|
+    build_name   = options[:build_name] || pubspec_version
+    build_number = options[:build_number] || begin
+      latest = latest_testflight_build_number(app_identifier: APP_ID) rescue 0
+      (latest || 0) + 1
+    end
+    UI.message("Building Pixi #{build_name} (#{build_number})")
+
+    with_clean_env do
+      Dir.chdir(REPO_ROOT) do
+        sh("flutter", "pub", "get")
+        sh("flutter", "build", "ios", "--release", "--no-codesign",
+           "--build-name=#{build_name}", "--build-number=#{build_number}")
+      end
+    end
+
+    asc_key = File.expand_path(ENV.fetch("ASC_KEY_PATH"), __dir__)
+    signing_xcargs = [
+      "-allowProvisioningUpdates",
+      "-authenticationKeyPath",     asc_key.shellescape,
+      "-authenticationKeyID",       ENV.fetch("ASC_KEY_ID"),
+      "-authenticationKeyIssuerID", ENV.fetch("ASC_ISSUER_ID"),
+    ].join(" ")
+
+    ensure_bundle_id_registered(APP_ID, "Pixi")
+
+    profile_name = get_provisioning_profile(
+      api_key:            lane_context[SharedValues::APP_STORE_CONNECT_API_KEY],
+      app_identifier:     APP_ID,
+      provisioning_name:  "Pixi App Store",
+      fail_on_name_taken: false,
+      force:              true
+    )
+
+    build_app(
+      workspace:        "Runner.xcworkspace",
+      scheme:           "Runner",
+      export_method:    "app-store",
+      output_directory: IPA_DIR,
+      output_name:      IPA_NAME,
+      xcargs:           signing_xcargs,
+      export_options:   {
+        method:               "app-store",
+        signingStyle:         "manual",
+        provisioningProfiles: { APP_ID => profile_name },
+      },
+      clean:            true
+    )
+  end
+
+  desc "Build and upload to TestFlight"
+  lane :beta do
+    build
+    upload_to_testflight(ipa: File.join(IPA_DIR, IPA_NAME), skip_waiting_for_build_processing: true)
+    UI.success("Uploaded to TestFlight (processing takes ~5–15 min).")
+  end
+
+  desc "Upload only texts + screenshots from fastlane/metadata and fastlane/screenshots"
+  lane :metadata do
+    upload_to_app_store(
+      skip_binary_upload:  true,
+      submit_for_review:   false,
+      force:               true,
+      overwrite_screenshots: true,
+      precheck_include_in_app_purchases: false
+    )
+  end
+
+  desc "Build + upload binary, texts and screenshots (review is NOT auto-submitted)"
+  lane :release do
+    build
+    upload_to_app_store(
+      ipa:                 File.join(IPA_DIR, IPA_NAME),
+      submit_for_review:   false,
+      automatic_release:   false,
+      force:               true,
+      overwrite_screenshots: true,
+      precheck_include_in_app_purchases: false
+    )
+    UI.success("Uploaded. Check App Store Connect, then press 'Add for Review'.")
+  end
+end

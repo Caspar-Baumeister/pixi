@@ -1,0 +1,6 @@
+# Optional: pins fastlane for reproducible CI runs.
+# The Homebrew `fastlane` already on this machine works without bundler — this
+# is here so `bundle exec fastlane ...` gives an identical version elsewhere.
+source "https://rubygems.org"
+
+gem "fastlane"
