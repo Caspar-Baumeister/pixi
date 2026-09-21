@@ -39,8 +39,11 @@ flutter:
   uses-material-design: true
 
   assets:
-    - assets/cats/
     - assets/cats/stretch/
+    - assets/cats/happy/
+    - assets/cats/bell/
+    - assets/cats/curious/
+    - assets/cats/wave/
     - assets/cats/gym/
     - assets/cats/sad/
     - assets/cats/sleep/

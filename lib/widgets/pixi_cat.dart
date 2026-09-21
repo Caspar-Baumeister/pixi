@@ -28,8 +28,20 @@ class CatAnims {
   static const sad = CatAnim('sad', 20, fps: 7, holdMs: 900);
   static const sleep = CatAnim('sleep', 20, fps: 5, holdMs: 200);
 
+  static const wave = CatAnim('wave', 20, fps: 9, holdMs: 1200);
+
+  static const curious = CatAnim('curious', 15, fps: 8, holdMs: 1400);
+
+  static const bell = CatAnim('bell', 20, fps: 9, holdMs: 1400);
+
+  static const happy = CatAnim('happy', 24, fps: 10, holdMs: 1500);
+
   static final Map<String, CatAnim> all = {
     'stretch': stretch,
+    'happy': happy,
+    'bell': bell,
+    'curious': curious,
+    'wave': wave,
     'gym': gym,
     'sad': sad,
     'sleep': sleep,
