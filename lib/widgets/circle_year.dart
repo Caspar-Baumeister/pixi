@@ -65,7 +65,7 @@ class CircleYear extends StatelessWidget {
             ),
           ),
           if (showCat)
-            PixiCat(size: layout.rIn * 1.25, animate: animateCat, anim: CatAnims.forMap(map)),
+            PixiCat(size: layout.rIn * 1.7, animate: animateCat, anim: CatAnims.forMap(map)),
         ],
       ),
     );

@@ -4,72 +4,56 @@ import 'package:flutter/material.dart';
 
 import '../models/pix_map.dart';
 
-/// One looping sprite animation of the sketched cat.
+/// A looping cat animation made of a few hand-drawn keyframes.
+///
+/// Frames live in `assets/cats/<id>/01.png …` (square, transparent).
+/// [seq] lists which frame (1-based) to show, [ms] how long each step lasts –
+/// like classic animation with holds, so a handful of clean drawings is
+/// enough.
 class CatAnim {
-  const CatAnim(this.id, this.frames, {this.fps = 10, this.holdMs = 1600});
+  const CatAnim(this.id, this.frames, this.seq, this.ms);
 
-  /// Folder under assets/cats/.
   final String id;
   final int frames;
-  final double fps;
+  final List<int> seq;
+  final List<int> ms;
 
-  /// Pause on the first frame before the loop plays again (calm idle).
-  final int holdMs;
-
-  String frame(int i) => 'assets/cats/$id/${(i + 1).toString().padLeft(2, '0')}.png';
+  String frame(int n) => 'assets/cats/$id/${n.toString().padLeft(2, '0')}.png';
 }
 
-/// All animations that ship with the app. Map-specific cats fall back to
-/// [stretch] until their sprite sheet exists.
 class CatAnims {
   CatAnims._();
-  static const stretch = CatAnim('stretch', 25, fps: 11, holdMs: 1800);
-  static const gym = CatAnim('gym', 20, fps: 9, holdMs: 500);
-  static const sad = CatAnim('sad', 20, fps: 7, holdMs: 900);
-  static const sleep = CatAnim('sleep', 20, fps: 5, holdMs: 200);
 
-  static const wave = CatAnim('wave', 20, fps: 9, holdMs: 1200);
-
-  static const curious = CatAnim('curious', 15, fps: 8, holdMs: 1400);
-
-  static const bell = CatAnim('bell', 20, fps: 9, holdMs: 1400);
-
-  static const happy = CatAnim('happy', 24, fps: 10, holdMs: 1500);
+  /// Default cat: sits, blinks now and then.
+  static const idle = CatAnim('idle', 2, [1, 2, 1, 2, 1], [2600, 130, 170, 130, 2200]);
+  static const wave = CatAnim('wave', 4, [1, 2, 3, 4, 3, 4, 3, 2], [1400, 140, 170, 170, 170, 170, 170, 140]);
+  static const curious = CatAnim('curious', 3, [1, 2, 1, 3], [1500, 1000, 600, 1000]);
+  static const sad = CatAnim('sad', 3, [1, 2, 1, 3], [1400, 900, 500, 1100]);
+  static const happy = CatAnim('happy', 5, [1, 2, 3, 4, 3, 5, 1], [1200, 110, 80, 170, 80, 110, 300]);
+  static const gym = CatAnim('gym', 2, [1, 2], [700, 900]);
+  static const bell = CatAnim('bell', 2, [1, 2, 1, 2], [1500, 260, 140, 260]);
+  static const sleep = CatAnim('sleep', 5, [1, 2, 3, 2, 1, 4, 5, 4], [320, 320, 420, 320, 320, 320, 420, 320]);
 
   static final Map<String, CatAnim> all = {
-    'stretch': stretch,
-    'happy': happy,
-    'bell': bell,
-    'curious': curious,
-    'wave': wave,
-    'gym': gym,
-    'sad': sad,
-    'sleep': sleep,
+    for (final a in [idle, wave, curious, sad, happy, gym, bell, sleep]) a.id: a,
   };
 
-  /// Registers an animation (used for the optional extra sheets).
-  static void register(CatAnim a) => all[a.id] = a;
-
   static CatAnim byId(String id) {
-    if (id == 'pixi' || id.isEmpty) return stretch;
-    return all[id] ?? stretch;
+    if (id == 'pixi' || id.isEmpty || id == 'stretch') return idle;
+    return all[id] ?? idle;
   }
 
   /// The cat that belongs to a map (gym cat for training, sleepy cat for
   /// sleep …). Works for maps created before catIds existed, too.
   static CatAnim forMap(PixMap? m) {
-    if (m == null) return stretch;
+    if (m == null) return idle;
     if (m.catId != 'pixi' && all.containsKey(m.catId)) return all[m.catId]!;
     const byTemplate = {'training': 'gym', 'sleep': 'sleep', 'dreams': 'sleep', 'cry': 'sad'};
-    final id = byTemplate[m.templateId];
-    return id != null && all.containsKey(id) ? all[id]! : stretch;
+    return all[byTemplate[m.templateId]] ?? idle;
   }
 }
 
-/// The sketched cat, playing a looping sprite animation.
-///
-/// [size] is the height; the frames are 4:3, so the widget is `size * 4/3`
-/// wide.
+/// The sketched cat. [size] is width and height (frames are square).
 class PixiCat extends StatefulWidget {
   const PixiCat({
     super.key,
@@ -88,7 +72,7 @@ class PixiCat extends StatefulWidget {
 
   static Future<void> precache(BuildContext context) async {
     for (final a in CatAnims.all.values) {
-      for (var i = 0; i < a.frames; i++) {
+      for (var i = 1; i <= a.frames; i++) {
         await precacheImage(AssetImage(a.frame(i)), context);
       }
     }
@@ -100,34 +84,32 @@ class PixiCat extends StatefulWidget {
 
 class _PixiCatState extends State<PixiCat> {
   Timer? _timer;
-  int _frame = 0;
+  int _step = 0;
 
   CatAnim get _anim => widget.anim ?? CatAnims.byId(widget.catId);
 
   @override
   void initState() {
     super.initState();
-    _schedule(initial: true);
+    _schedule();
   }
 
   @override
   void didUpdateWidget(covariant PixiCat old) {
     super.didUpdateWidget(old);
     if (old.animate != widget.animate || old.catId != widget.catId || old.anim?.id != widget.anim?.id) {
-      _frame = 0;
-      _schedule(initial: true);
+      _step = 0;
+      _schedule();
     }
   }
 
-  void _schedule({bool initial = false}) {
+  void _schedule() {
     _timer?.cancel();
     if (!widget.animate) return;
     final a = _anim;
-    final frameMs = (1000 / a.fps).round();
-    final wait = _frame == 0 ? (initial ? 600 : a.holdMs) : frameMs;
-    _timer = Timer(Duration(milliseconds: wait), () {
+    _timer = Timer(Duration(milliseconds: a.ms[_step % a.ms.length]), () {
       if (!mounted) return;
-      setState(() => _frame = (_frame + 1) % a.frames);
+      setState(() => _step = (_step + 1) % a.seq.length);
       _schedule();
     });
   }
@@ -140,17 +122,17 @@ class _PixiCatState extends State<PixiCat> {
 
   @override
   Widget build(BuildContext context) {
-    final w = widget.size * 4 / 3;
+    final a = _anim;
     Widget img = Image.asset(
-      _anim.frame(_frame),
-      width: w,
+      a.frame(a.seq[_step % a.seq.length]),
+      width: widget.size,
       height: widget.size,
       fit: BoxFit.contain,
       gaplessPlayback: true,
       filterQuality: FilterQuality.medium,
     );
     if (widget.mirror) img = Transform.flip(flipX: true, child: img);
-    return SizedBox(width: w, height: widget.size, child: img);
+    return SizedBox(width: widget.size, height: widget.size, child: img);
   }
 }
 
@@ -176,13 +158,13 @@ class GlowingCat extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      width: size * 1.6,
-      height: size * 1.15,
+      width: size * 1.5,
+      height: size * 1.1,
       child: Stack(
         alignment: Alignment.center,
         children: [
           Container(
-            width: size * 1.5,
+            width: size * 1.4,
             height: size * 1.1,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
