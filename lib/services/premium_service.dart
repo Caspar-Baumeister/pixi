@@ -19,7 +19,7 @@ class PremiumService {
   /// Override at build time with --dart-define=RC_API_KEY=appl_xxx
   static const apiKey = String.fromEnvironment(
     'RC_API_KEY',
-    defaultValue: 'appl_REPLACE_WITH_PIXI_KEY',
+    defaultValue: 'appl_YTabUqHlHSzCYOwcIiBWnWZAKzB',
   );
 
   static const entitlementId = 'premium';

@@ -22,7 +22,10 @@ enum _Step { hi, name, pick, how, time, circle, stats, corr, go }
 /// Long, personal onboarding (structure modelled on Amy): progress bar,
 /// sketched cat, one question per screen, full-width CTA.
 class OnboardingScreen extends ConsumerStatefulWidget {
-  const OnboardingScreen({super.key});
+  const OnboardingScreen({super.key, this.startStep});
+
+  /// Screenshot mode only: jump straight to a step ('pick', 'how', 'circle' ...).
+  final String? startStep;
 
   @override
   ConsumerState<OnboardingScreen> createState() => _OnboardingScreenState();
@@ -42,6 +45,18 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
   TimeOfDay _time = const TimeOfDay(hour: 8, minute: 30);
   final Set<String> _extraAdded = {};
   bool _busy = false;
+
+  @override
+  void initState() {
+    super.initState();
+    final start = widget.startStep;
+    if (start != null) {
+      _step = _Step.values.firstWhere((e) => e.name == start, orElse: () => _Step.hi);
+      if (_Step.values.indexOf(_step) > _Step.values.indexOf(_Step.pick)) {
+        WidgetsBinding.instance.addPostFrameCallback((_) => _createFirstMap());
+      }
+    }
+  }
 
   int get _index => _Step.values.indexOf(_step);
   int get _total => _Step.values.length;
@@ -607,7 +622,7 @@ class _PickStepState extends State<_PickStep> {
         Expanded(
           child: LayoutBuilder(builder: (context, c) {
             // Fit the card to the available height: grid + title + legend + padding.
-            const chrome = 118.0; // title, legend, paddings inside the card
+            const chrome = 136.0; // title, subtitle, legend, paddings inside the card
             final gridH = c.maxHeight - chrome - 24;
             final ratio = PixelGrid.heightForWidth(100, showLabels: true) / 100;
             final gridW = (gridH / ratio).clamp(120.0, c.maxWidth * 0.78 - 32);

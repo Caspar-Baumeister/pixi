@@ -38,14 +38,17 @@ class DemoData {
     var mood = 0.55; // slow-moving baseline 0..1
     while (!d.isAfter(end)) {
       // seasonality: brighter in summer, a dip in Feb/Nov
-      final season = 0.12 * sin((d.month - 4) / 12 * 2 * pi);
-      mood += (rnd.nextDouble() - 0.5) * 0.18;
-      mood = mood.clamp(0.15, 0.95);
+      final season = 0.05 * sin((d.month - 4) / 12 * 2 * pi);
+      mood += (rnd.nextDouble() - 0.5) * 0.10;
+      mood = mood.clamp(0.40, 0.70);
       var v = mood + season;
       switch (id) {
         case 'mood':
-          if (d.weekday >= 6) v += 0.12; // weekends
-          if (d.weekday == 1) v -= 0.08;
+          // slow drift + clear day-to-day variation, like a real person
+          final noise = (rnd.nextDouble() + rnd.nextDouble() + rnd.nextDouble() - 1.5) * 0.34;
+          v = mood + season + noise;
+          if (d.weekday >= 6) v += 0.08; // weekends
+          if (d.weekday == 1) v -= 0.06;
           break;
         case 'dreams':
           v = rnd.nextDouble() * 0.9 + (d.weekday >= 6 ? 0.1 : 0);

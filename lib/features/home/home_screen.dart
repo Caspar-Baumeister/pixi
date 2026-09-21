@@ -67,6 +67,15 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     final s = S.of(context);
+    // Keep the pager in sync when the selected map changes elsewhere
+    // (new map added, map picked in the overview …).
+    ref.listen<int>(selectedMapIndexProvider, (prev, next) {
+      if (_pager.hasClients && (_pager.page ?? -1).round() != next) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (_pager.hasClients) _pager.jumpToPage(next);
+        });
+      }
+    });
     final data = ref.watch(appProvider);
     final maps = data.maps;
     final year = ref.watch(selectedYearProvider);

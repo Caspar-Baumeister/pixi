@@ -1,9 +1,22 @@
-import 'package:flutter/widgets.dart';
+import 'dart:io';
+import 'dart:ui' as ui;
+
+import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../models/pix_map.dart';
 import '../models/templates.dart';
 import 'demo_data.dart';
+import '../app.dart';
+import '../data/providers.dart';
+import '../features/checkin/checkin_screen.dart';
+import '../features/circle/circle_screen.dart';
+import '../features/maps/maps_screen.dart';
+import '../features/maps/templates_screen.dart';
+import '../features/onboarding/onboarding_screen.dart';
+import '../features/premium/paywall_screen.dart';
+import '../features/stats/stats_screen.dart';
 
 /// Store screenshot mode: `flutter run --dart-define=SCREENSHOT=true`
 /// Seeds a full, good-looking year, skips onboarding, unlocks premium and
@@ -40,4 +53,80 @@ AppData buildScreenshotData() {
       checkinCount: 42,
     ),
   );
+}
+
+
+// ---------------------------------------------------------------------------
+// Remote control for store screenshots (called via the Dart VM service
+// `evaluate`, e.g. shotNav('circle'); shotCapture('en_3_circle')).
+// ---------------------------------------------------------------------------
+
+final GlobalKey shotBoundaryKey = GlobalKey();
+const String kShotDir = '/Users/casparbaumeister/Documents/projekte/pixi/pixi_app/_shots/raw';
+
+ProviderContainer _container() => ProviderScope.containerOf(rootNavigatorKey.currentContext!);
+
+String shotNav(String where, [String arg = '']) {
+  final nav = rootNavigatorKey.currentState!;
+  final c = _container();
+  final maps = c.read(appProvider).maps;
+  String mapId(String t) => maps.firstWhere((m) => m.templateId == t, orElse: () => maps.first).id;
+  void push(Widget w) => nav.push(MaterialPageRoute(builder: (_) => w));
+  nav.popUntil((r) => r.isFirst);
+  switch (where) {
+    case 'home':
+      final i = maps.indexWhere((m) => m.templateId == (arg.isEmpty ? 'mood' : arg));
+      c.read(selectedMapIndexProvider.notifier).state = i < 0 ? 0 : i;
+      break;
+    case 'checkin':
+      push(const CheckinScreen());
+      break;
+    case 'circle':
+      push(CircleScreen(mapId: mapId(arg.isEmpty ? 'mood' : arg)));
+      break;
+    case 'stats':
+      push(StatsScreen(mapId: mapId(arg.isEmpty ? 'mood' : arg)));
+      break;
+    case 'maps':
+      push(const MapsScreen());
+      break;
+    case 'templates':
+      push(const TemplatesScreen());
+      break;
+    case 'paywall':
+      push(const PaywallScreen());
+      break;
+    case 'onboarding':
+      push(OnboardingScreen(startStep: arg.isEmpty ? null : arg));
+      break;
+    case 'de':
+    case 'en':
+      c.read(localeOverrideProvider.notifier).state = Locale(where);
+      break;
+  }
+  return 'ok $where';
+}
+
+Future<String> shotCapture(String name, [double pixelRatio = 3]) async {
+  final boundary = shotBoundaryKey.currentContext!.findRenderObject() as RenderRepaintBoundary;
+  final image = await boundary.toImage(pixelRatio: pixelRatio);
+  final bytes = await image.toByteData(format: ui.ImageByteFormat.png);
+  final dir = Directory(kShotDir)..createSync(recursive: true);
+  final f = File('${dir.path}/$name.png');
+  await f.writeAsBytes(bytes!.buffer.asUint8List(), flush: true);
+  return '${f.path} ${image.width}x${image.height}';
+}
+
+/// Scroll the first scrollable on screen (e.g. stats) by [dy] logical pixels.
+String shotScroll(double dy) {
+  void visit(Element e) {
+    if (e.widget is Scrollable) {
+      final st = (e as StatefulElement).state as ScrollableState;
+      st.position.jumpTo((st.position.pixels + dy).clamp(0, st.position.maxScrollExtent));
+      return;
+    }
+    e.visitChildren(visit);
+  }
+  rootNavigatorKey.currentContext!.visitChildElements(visit);
+  return 'scrolled';
 }

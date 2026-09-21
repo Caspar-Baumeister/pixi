@@ -71,7 +71,8 @@ class _PixiAppState extends ConsumerState<PixiApp> {
       locale: ref.watch(localeOverrideProvider),
       builder: (context, child) {
         PixiCat.precache(context);
-        return child ?? const SizedBox.shrink();
+        final c = child ?? const SizedBox.shrink();
+        return kScreenshotMode ? RepaintBoundary(key: shotBoundaryKey, child: c) : c;
       },
       home: AnimatedSwitcher(
         duration: const Duration(milliseconds: 500),

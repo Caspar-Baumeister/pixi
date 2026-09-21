@@ -17,6 +17,7 @@ import '../../services/premium_service.dart';
 import '../../widgets/pixi_cat.dart';
 import '../../widgets/ui.dart';
 import '../feedback/feedback_sheet.dart';
+import '../onboarding/onboarding_screen.dart';
 import '../premium/paywall_screen.dart';
 
 class SettingsScreen extends ConsumerStatefulWidget {
@@ -154,6 +155,12 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                   ],
                 ),
               ),
+              if (kScreenshotMode)
+                ListTile(
+                  contentPadding: EdgeInsets.zero,
+                  title: Text('Onboarding (Screenshots)', style: PixiText.label()),
+                  onTap: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => const OnboardingScreen())),
+                ),
               if (kScreenshotMode)
                 SwitchListTile.adaptive(
                   contentPadding: EdgeInsets.zero,

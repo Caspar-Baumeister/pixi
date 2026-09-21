@@ -23,3 +23,6 @@ ios/fastlane/report.xml
 ios/fastlane/Preview.html
 app.*.symbols
 /build
+
+# screenshot working files
+_shots/
