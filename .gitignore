@@ -26,3 +26,4 @@ app.*.symbols
 
 # screenshot working files
 _shots/
+*.mobileprovision
