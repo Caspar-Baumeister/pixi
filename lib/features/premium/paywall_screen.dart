@@ -11,6 +11,7 @@ import '../../models/templates.dart';
 import '../../services/premium_service.dart';
 import '../../widgets/pixi_cat.dart';
 import '../../widgets/pixel_grid.dart';
+import '../../widgets/stats_preview.dart';
 import '../../widgets/ui.dart';
 
 enum PaywallReason { maps, stats, settings }
@@ -101,7 +102,7 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
                   child: ListView(
                     padding: const EdgeInsets.fromLTRB(24, 8, 24, 8),
                     children: [
-                      const Center(child: GlowingCat(color: accent, size: 170)),
+                      const Center(child: GlowingCat(color: accent, size: 130)),
                       Text(s.t('paywall_title'), style: PixiText.title(size: 30)),
                       const SizedBox(height: 6),
                       Text(
@@ -110,7 +111,11 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
                             : s.t('paywall_sub'),
                         style: PixiText.body1(color: PixiColors.muted),
                       ),
-                      const SizedBox(height: 22),
+                      const SizedBox(height: 20),
+                      Text(s.t('pw_prev_title'), style: PixiText.label()),
+                      const SizedBox(height: 10),
+                      const PremiumStatsPreview(),
+                      const SizedBox(height: 18),
                       _Feature(icon: Icons.grid_view_rounded, text: s.t('feat_maps')),
                       _Feature(icon: Icons.insights_rounded, text: s.t('feat_stats')),
                       _Feature(icon: Icons.pets_rounded, text: s.t('feat_support')),

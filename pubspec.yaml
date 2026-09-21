@@ -40,6 +40,10 @@ flutter:
 
   assets:
     - assets/cats/
+    - assets/cats/stretch/
+    - assets/cats/gym/
+    - assets/cats/sad/
+    - assets/cats/sleep/
     - assets/icon/
 
   fonts:

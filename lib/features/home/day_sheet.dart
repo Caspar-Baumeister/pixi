@@ -65,7 +65,7 @@ class DaySheet extends ConsumerWidget {
                   ],
                 ),
               ),
-              PixiCat(size: 64, catId: maps.isEmpty ? 'pixi' : maps.first.catId),
+              PixiCat(size: 56, anim: CatAnims.forMap(maps.isEmpty ? null : maps.first)),
             ],
           ),
           if (isFuture) ...[

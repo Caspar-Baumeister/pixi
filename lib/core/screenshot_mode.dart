@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 import 'dart:ui' as ui;
 
@@ -41,7 +42,7 @@ AppData buildScreenshotData() {
       mood.id: moodData,
       sleep.id: DemoData.correlatedWith(moodData, mood.levels.length, sleep.levels.length),
       dreams.id: DemoData.forTemplate('dreams', dreams.levels.length, year: year, fullYear: true),
-      training.id: DemoData.forTemplate('training', training.levels.length, year: year, fullYear: true),
+      training.id: DemoData.correlatedWith(moodData, mood.levels.length, training.levels.length),
     },
     settings: const Settings(
       name: 'Lena',
@@ -129,4 +130,15 @@ String shotScroll(double dy) {
   }
   rootNavigatorKey.currentContext!.visitChildElements(visit);
   return 'scrolled';
+}
+
+
+/// Dev helper (screenshot mode only): append a base64 chunk to a file under
+/// the project's _shots/in folder. Used to bring generated sprite sheets in.
+String shotWrite(String name, String b64, [bool first = false]) {
+  if (!kScreenshotMode) return 'off';
+  final dir = Directory('${kShotDir.replaceAll('/raw', '')}/in')..createSync(recursive: true);
+  final f = File('${dir.path}/$name');
+  f.writeAsBytesSync(base64Decode(b64), mode: first ? FileMode.write : FileMode.append, flush: true);
+  return 'ok ${f.lengthSync()}';
 }

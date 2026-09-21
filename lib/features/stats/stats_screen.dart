@@ -9,6 +9,7 @@ import '../../core/strings.dart';
 import '../../core/theme.dart';
 import '../../data/providers.dart';
 import '../../models/pix_map.dart';
+import '../../widgets/links.dart';
 import '../../widgets/pixel_grid.dart';
 import '../../widgets/pixi_cat.dart';
 import '../../widgets/ui.dart';
@@ -164,6 +165,24 @@ class _StatsScreenState extends ConsumerState<StatsScreen> {
             ),
           ),
         ],
+        const SizedBox(height: 24),
+        Text(s.t('links_title'), style: PixiText.title(size: 22)),
+        const SizedBox(height: 4),
+        Text(s.t('links_sub'), style: PixiText.label()),
+        const SizedBox(height: 10),
+        Builder(builder: (context) {
+          final links = computeLinks(data.maps, {for (final m in data.maps) m.id: data.entriesFor(m.id)}).take(10).toList();
+          return PaperCard(
+            glowColor: map.baseColor,
+            padding: const EdgeInsets.fromLTRB(14, 10, 14, 10),
+            child: links.isEmpty
+                ? Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 8),
+                    child: Text(s.t('links_none'), style: PixiText.body1(color: PixiColors.muted)),
+                  )
+                : Column(children: [for (final l in links) LinkRow(link: l)]),
+          );
+        }),
         const SizedBox(height: 24),
         Text(s.t('correlations'), style: PixiText.title(size: 22)),
         const SizedBox(height: 10),
@@ -340,17 +359,8 @@ class _CorrelationCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final s = S.of(context);
-    final c = correlate(a, ea, b, eb);
-    String text;
-    if (!c.meaningful || c.diff == null) {
-      text = c.sharedDays < 10 ? s.t('corr_need_two') : s.t('corr_none');
-    } else {
-      final d = c.diff!.abs().toStringAsFixed(1).replaceAll('.', s.isDe ? ',' : '.');
-      text = (c.diff! >= 0 ? s.t('corr_result_pos') : s.t('corr_result_neg'))
-          .replaceAll('{a}', s.r(a.title))
-          .replaceAll('{b}', s.r(b.title))
-          .replaceAll('{d}', d);
-    }
+    final links = linksBetween(a, ea, b, eb).take(4).toList();
+    final shared = ea.keys.where(eb.containsKey).length;
     return Column(
       children: [
         Row(
@@ -364,12 +374,16 @@ class _CorrelationCard extends StatelessWidget {
         const SizedBox(height: 12),
         PaperCard(
           glowColor: b.baseColor,
+          padding: const EdgeInsets.fromLTRB(14, 12, 14, 12),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(text, style: PixiText.title(size: 17)),
-              const SizedBox(height: 6),
-              Text(s.t('corr_days').replaceAll('{n}', '${c.sharedDays}'), style: PixiText.label(size: 12)),
+              if (links.isEmpty)
+                Text(shared < 10 ? s.t('corr_need_two') : s.t('corr_none'), style: PixiText.title(size: 17))
+              else
+                for (final l in links) LinkRow(link: l, showMaps: false),
+              const SizedBox(height: 4),
+              Text(s.t('corr_days').replaceAll('{n}', '$shared'), style: PixiText.label(size: 12)),
             ],
           ),
         ),

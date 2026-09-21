@@ -2,40 +2,83 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 
-/// The sketched cat, animated as a hand-drawn "boil" from 5 frames.
+import '../models/pix_map.dart';
+
+/// One looping sprite animation of the sketched cat.
+class CatAnim {
+  const CatAnim(this.id, this.frames, {this.fps = 10, this.holdMs = 1600});
+
+  /// Folder under assets/cats/.
+  final String id;
+  final int frames;
+  final double fps;
+
+  /// Pause on the first frame before the loop plays again (calm idle).
+  final int holdMs;
+
+  String frame(int i) => 'assets/cats/$id/${(i + 1).toString().padLeft(2, '0')}.png';
+}
+
+/// All animations that ship with the app. Map-specific cats fall back to
+/// [stretch] until their sprite sheet exists.
+class CatAnims {
+  CatAnims._();
+  static const stretch = CatAnim('stretch', 25, fps: 11, holdMs: 1800);
+  static const gym = CatAnim('gym', 20, fps: 9, holdMs: 500);
+  static const sad = CatAnim('sad', 20, fps: 7, holdMs: 900);
+  static const sleep = CatAnim('sleep', 20, fps: 5, holdMs: 200);
+
+  static final Map<String, CatAnim> all = {
+    'stretch': stretch,
+    'gym': gym,
+    'sad': sad,
+    'sleep': sleep,
+  };
+
+  /// Registers an animation (used for the optional extra sheets).
+  static void register(CatAnim a) => all[a.id] = a;
+
+  static CatAnim byId(String id) {
+    if (id == 'pixi' || id.isEmpty) return stretch;
+    return all[id] ?? stretch;
+  }
+
+  /// The cat that belongs to a map (gym cat for training, sleepy cat for
+  /// sleep …). Works for maps created before catIds existed, too.
+  static CatAnim forMap(PixMap? m) {
+    if (m == null) return stretch;
+    if (m.catId != 'pixi' && all.containsKey(m.catId)) return all[m.catId]!;
+    const byTemplate = {'training': 'gym', 'sleep': 'sleep', 'dreams': 'sleep', 'cry': 'sad'};
+    final id = byTemplate[m.templateId];
+    return id != null && all.containsKey(id) ? all[id]! : stretch;
+  }
+}
+
+/// The sketched cat, playing a looping sprite animation.
 ///
-/// All maps currently share the same frames; `catId` is kept so each map
-/// can get its own cat later (assets/cats/<catId>_1..5.png).
+/// [size] is the height; the frames are 4:3, so the widget is `size * 4/3`
+/// wide.
 class PixiCat extends StatefulWidget {
   const PixiCat({
     super.key,
     this.size = 160,
     this.catId = 'pixi',
+    this.anim,
     this.animate = true,
-    this.fps = 5,
     this.mirror = false,
   });
 
   final double size;
   final String catId;
+  final CatAnim? anim;
   final bool animate;
-  final double fps;
   final bool mirror;
 
-  static const int frameCount = 5;
-
-  /// Frame order for a lively but calm loop.
-  static const List<int> sequence = [1, 2, 3, 4, 5, 4, 3, 2, 1, 3, 5, 2];
-
-  static String asset(String catId, int frame) {
-    // Only "pixi" frames exist in v1; other ids fall back to pixi.
-    final id = catId == 'pixi' ? 'cat' : catId;
-    return 'assets/cats/${id}_$frame.png';
-  }
-
   static Future<void> precache(BuildContext context) async {
-    for (var i = 1; i <= frameCount; i++) {
-      await precacheImage(AssetImage(asset('pixi', i)), context);
+    for (final a in CatAnims.all.values) {
+      for (var i = 0; i < a.frames; i++) {
+        await precacheImage(AssetImage(a.frame(i)), context);
+      }
     }
   }
 
@@ -45,27 +88,35 @@ class PixiCat extends StatefulWidget {
 
 class _PixiCatState extends State<PixiCat> {
   Timer? _timer;
-  int _idx = 0;
+  int _frame = 0;
+
+  CatAnim get _anim => widget.anim ?? CatAnims.byId(widget.catId);
 
   @override
   void initState() {
     super.initState();
-    _start();
+    _schedule(initial: true);
   }
 
   @override
   void didUpdateWidget(covariant PixiCat old) {
     super.didUpdateWidget(old);
-    if (old.animate != widget.animate || old.fps != widget.fps) _start();
+    if (old.animate != widget.animate || old.catId != widget.catId || old.anim?.id != widget.anim?.id) {
+      _frame = 0;
+      _schedule(initial: true);
+    }
   }
 
-  void _start() {
+  void _schedule({bool initial = false}) {
     _timer?.cancel();
     if (!widget.animate) return;
-    final ms = (1000 / widget.fps).round();
-    _timer = Timer.periodic(Duration(milliseconds: ms), (_) {
+    final a = _anim;
+    final frameMs = (1000 / a.fps).round();
+    final wait = _frame == 0 ? (initial ? 600 : a.holdMs) : frameMs;
+    _timer = Timer(Duration(milliseconds: wait), () {
       if (!mounted) return;
-      setState(() => _idx = (_idx + 1) % PixiCat.sequence.length);
+      setState(() => _frame = (_frame + 1) % a.frames);
+      _schedule();
     });
   }
 
@@ -77,19 +128,17 @@ class _PixiCatState extends State<PixiCat> {
 
   @override
   Widget build(BuildContext context) {
-    final frame = PixiCat.sequence[_idx];
+    final w = widget.size * 4 / 3;
     Widget img = Image.asset(
-      PixiCat.asset(widget.catId, frame),
-      width: widget.size,
+      _anim.frame(_frame),
+      width: w,
       height: widget.size,
       fit: BoxFit.contain,
       gaplessPlayback: true,
       filterQuality: FilterQuality.medium,
     );
-    if (widget.mirror) {
-      img = Transform.flip(flipX: true, child: img);
-    }
-    return SizedBox(width: widget.size, height: widget.size, child: img);
+    if (widget.mirror) img = Transform.flip(flipX: true, child: img);
+    return SizedBox(width: w, height: widget.size, child: img);
   }
 }
 
@@ -102,6 +151,7 @@ class GlowingCat extends StatelessWidget {
     this.glowOpacity = 0.28,
     this.animate = true,
     this.catId = 'pixi',
+    this.anim,
   });
 
   final Color color;
@@ -109,30 +159,28 @@ class GlowingCat extends StatelessWidget {
   final double glowOpacity;
   final bool animate;
   final String catId;
+  final CatAnim? anim;
 
   @override
   Widget build(BuildContext context) {
     return SizedBox(
       width: size * 1.6,
-      height: size * 1.3,
+      height: size * 1.15,
       child: Stack(
         alignment: Alignment.center,
         children: [
           Container(
             width: size * 1.5,
-            height: size * 1.2,
+            height: size * 1.1,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
               gradient: RadialGradient(
-                colors: [
-                  color.withValues(alpha: glowOpacity),
-                  color.withValues(alpha: 0),
-                ],
+                colors: [color.withValues(alpha: glowOpacity), color.withValues(alpha: 0)],
                 stops: const [0.0, 0.75],
               ),
             ),
           ),
-          PixiCat(size: size, animate: animate, catId: catId),
+          PixiCat(size: size, animate: animate, catId: catId, anim: anim),
         ],
       ),
     );

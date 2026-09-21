@@ -188,7 +188,7 @@ class _Question extends StatelessWidget {
               duration: const Duration(milliseconds: 300),
               curve: Curves.easeOutBack,
               scale: selected == null ? 1 : 1.06,
-              child: GlowingCat(color: map.baseColor, size: 190, catId: map.catId),
+              child: GlowingCat(color: map.baseColor, size: 170, anim: CatAnims.forMap(map)),
             ),
           ),
           if (greeting != null) ...[

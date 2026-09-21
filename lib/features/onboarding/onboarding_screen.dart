@@ -13,6 +13,7 @@ import '../../models/pix_map.dart';
 import '../../models/templates.dart';
 import '../../services/notification_service.dart';
 import '../../widgets/circle_year.dart';
+import '../../widgets/links.dart';
 import '../../widgets/pixel_grid.dart';
 import '../../widgets/pixi_cat.dart';
 import '../../widgets/ui.dart';
@@ -45,6 +46,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
   TimeOfDay _time = const TimeOfDay(hour: 8, minute: 30);
   final Set<String> _extraAdded = {};
   bool _busy = false;
+  bool? _reminderOn;
 
   @override
   void initState() {
@@ -129,7 +131,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
     final notifier = ref.read(appProvider.notifier);
     var enabled = false;
     if (withReminder) {
-      enabled = await NotificationService.instance.requestPermission();
+      enabled = _reminderOn ?? await NotificationService.instance.requestPermission();
     }
     notifier.updateSettings((s) => s.copyWith(
           name: _name.text.trim(),
@@ -149,6 +151,17 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
     }
     await notifier.flush();
     if (mounted) setState(() => _busy = false);
+  }
+
+  Future<void> _askReminder() async {
+    setState(() => _busy = true);
+    final ok = await NotificationService.instance.requestPermission();
+    if (!mounted) return;
+    setState(() {
+      _busy = false;
+      _reminderOn = ok;
+    });
+    _next();
   }
 
   // ---------------------------------------------------------------------------
@@ -231,21 +244,28 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
         return PrimaryButton(label: s.t('ob_pick_choose'), onPressed: _next);
       case _Step.how:
         return PrimaryButton(label: s.t('next'), onPressed: _howLevel == null ? null : _next);
-      case _Step.go:
+      case _Step.time:
         return Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            PrimaryButton(
-              label: s.t('ob_go_notif'),
-              loading: _busy,
-              onPressed: () => _finish(withReminder: true),
-            ),
+            PrimaryButton(label: s.t('ob_time_notif'), loading: _busy, onPressed: _askReminder),
             const SizedBox(height: 4),
             SecondaryButton(
-              label: s.t('ob_go_without'),
-              onPressed: _busy ? null : () => _finish(withReminder: false),
+              label: s.t('ob_time_later'),
+              onPressed: _busy
+                  ? null
+                  : () {
+                      setState(() => _reminderOn = false);
+                      _next();
+                    },
             ),
           ],
+        );
+      case _Step.go:
+        return PrimaryButton(
+          label: s.t('ob_go_start'),
+          loading: _busy,
+          onPressed: () => _finish(withReminder: _reminderOn == true),
         );
       default:
         return PrimaryButton(label: s.t('next'), onPressed: _next);
@@ -283,7 +303,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
             s,
             title: s.t('ob_hi_title'),
             subtitle: s.t('ob_hi_sub'),
-            illustration: GlowingCat(color: accent, size: 230),
+            illustration: GlowingCat(color: accent, size: 200, catId: 'wave'),
           ),
         ]);
 
@@ -293,7 +313,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
             s,
             title: s.t('ob_name_title'),
             subtitle: s.t('ob_name_sub'),
-            illustration: GlowingCat(color: accent, size: 170),
+            illustration: GlowingCat(color: accent, size: 150, catId: 'curious'),
           ),
           const SizedBox(height: 22),
           TextField(
@@ -326,7 +346,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
             s,
             title: s.r(map.question),
             subtitle: _howLevel == null ? s.t('ob_how_sub') : s.t('ob_how_done'),
-            illustration: GlowingCat(color: map.baseColor, size: 150, catId: map.catId),
+            illustration: GlowingCat(color: map.baseColor, size: 140, anim: CatAnims.forMap(map)),
           ),
           const SizedBox(height: 8),
           Text(
@@ -372,7 +392,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
             s,
             title: s.t('ob_time_title'),
             subtitle: s.t('ob_time_sub'),
-            illustration: GlowingCat(color: accent, size: 150),
+            illustration: GlowingCat(color: accent, size: 140, catId: 'bell'),
           ),
           const SizedBox(height: 22),
           PaperCard(
@@ -425,7 +445,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
             s,
             title: s.t('ob_stats_title'),
             subtitle: s.t('ob_stats_sub'),
-            illustration: GlowingCat(color: map.baseColor, size: 130, catId: map.catId),
+            illustration: GlowingCat(color: map.baseColor, size: 120, anim: CatAnims.forMap(map)),
           ),
           const SizedBox(height: 18),
           _StatsPreview(map: map, entries: demo),
@@ -434,12 +454,25 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
       case _Step.corr:
         final map = _map!;
         final demoA = DemoData.forTemplate(map.templateId, map.levels.length, fullYear: true);
-        final other = templateById(map.templateId == 'dreams' ? 'sleep' : 'dreams').toMap('demo-b');
+        final other = templateById(map.templateId == 'sleep' ? 'mood' : 'sleep').toMap('demo-b');
         final demoB = DemoData.correlatedWith(demoA, map.levels.length, other.levels.length);
         final year = DateTime.now().year;
         return _scroll([
           _header(s, title: s.t('ob_corr_title'), subtitle: s.t('ob_corr_sub')),
           const SizedBox(height: 18),
+          PaperCard(
+            glowColor: map.baseColor,
+            padding: const EdgeInsets.fromLTRB(14, 10, 14, 10),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(s.t('links_title'), style: PixiText.label()),
+                const SizedBox(height: 4),
+                for (final l in linksBetween(other, demoB, map, demoA).take(3)) LinkRow(link: l),
+              ],
+            ),
+          ),
+          const SizedBox(height: 14),
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -447,16 +480,6 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
               const SizedBox(width: 12),
               Expanded(child: _miniCard(s, map, demoA, year)),
             ],
-          ),
-          const SizedBox(height: 16),
-          PaperCard(
-            glowColor: map.baseColor,
-            child: Text(
-              s.isDe
-                  ? 'Nach guten Nächten war deine „${s.r(map.title)}“ im Schnitt 1,3 Stufen besser.'
-                  : 'After good nights your “${s.r(map.title)}” was 1.3 levels better on average.',
-              style: PixiText.title(size: 17),
-            ),
           ),
           const SizedBox(height: 22),
           Text(s.t('ob_corr_add'), style: PixiText.label()),
@@ -482,7 +505,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
             s,
             title: s.withName('ob_go_title', _name.text),
             subtitle: s.t('ob_go_sub'),
-            illustration: GlowingCat(color: accent, size: 230),
+            illustration: GlowingCat(color: accent, size: 200, catId: 'happy'),
           ),
         ]);
     }
