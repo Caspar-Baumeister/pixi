@@ -141,21 +141,27 @@ class _GridPainter extends CustomPainter {
     final radius = Radius.circular(geo.cell * 0.28);
     final base = map.baseColor;
 
-    // 1. soft radial glow behind everything
+    // 1. soft radial glow behind everything (ellipse that fades out at the edges)
     if (glow) {
-      final center = Offset(geo.labelW + (size.width - geo.labelW) / 2,
-          geo.labelH + (size.height - geo.labelH) / 2);
-      final r = max(size.width, size.height) * 0.62;
-      final glowPaint = Paint()
-        ..shader = RadialGradient(
-          colors: [
-            base.withValues(alpha: 0.20),
-            base.withValues(alpha: 0.06),
-            base.withValues(alpha: 0.0),
-          ],
-          stops: const [0.0, 0.55, 1.0],
-        ).createShader(Rect.fromCircle(center: center, radius: r));
-      canvas.drawRect(Offset.zero & size, glowPaint);
+      final center = Offset(size.width / 2, size.height / 2);
+      canvas.save();
+      canvas.translate(center.dx, center.dy);
+      canvas.scale(1, size.height / size.width);
+      final r = size.width * 0.75;
+      canvas.drawCircle(
+        Offset.zero,
+        r,
+        Paint()
+          ..shader = RadialGradient(
+            colors: [
+              base.withValues(alpha: 0.22),
+              base.withValues(alpha: 0.08),
+              base.withValues(alpha: 0.0),
+            ],
+            stops: const [0.0, 0.5, 1.0],
+          ).createShader(Rect.fromCircle(center: Offset.zero, radius: r)),
+      );
+      canvas.restore();
     }
 
     // 2. halo behind filled cells (the "leuchten")
@@ -257,15 +263,53 @@ class _GridPainter extends CustomPainter {
 
 /// Legend row: coloured dots with labels.
 class MapLegend extends StatelessWidget {
-  const MapLegend({super.key, required this.map, this.compact = false, this.onTap});
+  const MapLegend({super.key, required this.map, this.compact = false, this.vertical = false, this.onTap});
 
   final PixMap map;
   final bool compact;
+  final bool vertical;
   final void Function(int level)? onTap;
 
   @override
   Widget build(BuildContext context) {
     final s = S.of(context);
+    if (vertical) {
+      return Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          for (var i = map.levels.length - 1; i >= 0; i--)
+            Padding(
+              padding: const EdgeInsets.only(bottom: 9),
+              child: GestureDetector(
+                onTap: onTap == null ? null : () => onTap!(i),
+                child: Row(
+                  children: [
+                    Container(
+                      width: 14,
+                      height: 14,
+                      decoration: BoxDecoration(
+                        color: map.levels[i].color,
+                        borderRadius: BorderRadius.circular(4),
+                        boxShadow: [BoxShadow(color: map.baseColor.withValues(alpha: 0.3), blurRadius: 6)],
+                      ),
+                    ),
+                    const SizedBox(width: 7),
+                    Expanded(
+                      child: Text(
+                        s.r(map.levels[i].label),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: PixiText.label(size: 12, color: PixiColors.inkSoft),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+        ],
+      );
+    }
     return Wrap(
       spacing: compact ? 10 : 14,
       runSpacing: 6,

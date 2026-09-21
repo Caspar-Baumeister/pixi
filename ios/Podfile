@@ -36,7 +36,27 @@ target 'Runner' do
   end
 end
 
+
+# Xcode 27's Swift rejects RevenueCat's PaywallColor: the designated init lives in
+# an extension, so the compiler synthesizes a memberwise init that clashes with
+# init(stringRepresentation:). Move it into the struct body after every pod install.
+def patch_revenuecat_paywall_color(installer)
+  path = File.join(installer.sandbox.root, 'RevenueCat/Sources/Paywalls/PaywallColor.swift')
+  return unless File.exist?(path)
+  src = File.read(path)
+  return if src.include?('PIXI_PATCHED')
+  init_block = "\n    /// \"Designated\" initializer\n    private init(stringRepresentation: String, underlyingColor: (any Sendable)?) {\n        self.stringRepresentation = stringRepresentation\n        self._underlyingColor = underlyingColor\n    }\n"
+  anchor = "    fileprivate var _underlyingColor: (any Sendable)?\n"
+  return unless src.include?(init_block) && src.include?(anchor)
+  src = src.sub(init_block, "\n")
+  src = src.sub(anchor, anchor + "\n    // PIXI_PATCHED\n    private init(stringRepresentation: String, underlyingColor: (any Sendable)?) {\n        self.stringRepresentation = stringRepresentation\n        self._underlyingColor = underlyingColor\n    }\n")
+  File.chmod(0644, path) rescue nil
+  File.write(path, src)
+  puts 'Patched RevenueCat PaywallColor.swift for Xcode 27'
+end
+
 post_install do |installer|
+  patch_revenuecat_paywall_color(installer)
   installer.pods_project.targets.each do |target|
     flutter_additional_ios_build_settings(target)
     target.build_configurations.each do |config|

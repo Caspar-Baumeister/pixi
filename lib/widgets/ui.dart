@@ -52,7 +52,10 @@ class PrimaryButton extends StatelessWidget {
                   height: 22,
                   child: CircularProgressIndicator(strokeWidth: 2.4, color: textColor),
                 )
-              : Text(label, style: PixiText.button(color: textColor)),
+              : FittedBox(
+                  fit: BoxFit.scaleDown,
+                  child: Text(label, maxLines: 1, softWrap: false, style: PixiText.button(color: textColor)),
+                ),
         ),
       ),
     );

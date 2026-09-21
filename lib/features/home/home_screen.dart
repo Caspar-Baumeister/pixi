@@ -126,9 +126,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                         mainAxisSize: MainAxisSize.min,
                                         children: [
                                           Text(
-                                            s.r(current.title),
+                                            s.r(current.title).isEmpty ? s.t('custom_map') : s.r(current.title),
                                             maxLines: 1,
+                                            softWrap: false,
                                             overflow: TextOverflow.ellipsis,
+                                            textAlign: TextAlign.center,
                                             style: PixiText.title(size: 22),
                                           ),
                                           Text('$year', style: PixiText.label(size: 12)),
@@ -274,47 +276,46 @@ class _MapPage extends StatelessWidget {
     final s = S.of(context);
     final stats = computeStats(map, entries, year);
     return LayoutBuilder(builder: (context, c) {
-      // Fit the grid to the height; leave room for legend + stats row.
-      const reserve = 120.0;
-      final maxGridH = c.maxHeight - reserve;
+      // The grid fills the height; legend + stats sit in a slim column beside it.
+      const sideW = 84.0;
+      const gap = 14.0;
+      const padH = 16.0;
       final ratio = PixelGrid.heightForWidth(100) / 100;
-      final gridW = (maxGridH / ratio).clamp(160.0, c.maxWidth - 40);
-      return SingleChildScrollView(
-        physics: const ClampingScrollPhysics(),
-        padding: const EdgeInsets.fromLTRB(20, 10, 20, 8),
-        child: Column(
-          children: [
-            RepaintBoundary(
-              key: shareKey,
-              child: Container(
-                color: PixiColors.paper,
-                padding: const EdgeInsets.fromLTRB(12, 10, 12, 12),
-                child: Column(
-                  children: [
-                    SizedBox(
-                      width: gridW,
-                      child: PixelGrid(map: map, entries: entries, year: year, onTapDay: onTapDay),
-                    ),
-                    const SizedBox(height: 14),
-                    MapLegend(map: map),
-                  ],
-                ),
-              ),
-            ),
-            const SizedBox(height: 6),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
+      final maxByHeight = (c.maxHeight - 24) / ratio;
+      final maxByWidth = c.maxWidth - padH * 2 - sideW - gap;
+      final gridW = maxByHeight.clamp(150.0, maxByWidth);
+      return Center(
+        child: RepaintBoundary(
+          key: shareKey,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: padH, vertical: 8),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.end,
               children: [
-                _Stat(value: '${stats.count}', label: s.t('days_filled')),
-                const SizedBox(width: 28),
-                _Stat(value: '${stats.streak}', label: s.t('streak')),
+                SizedBox(
+                  width: gridW,
+                  child: PixelGrid(map: map, entries: entries, year: year, onTapDay: onTapDay),
+                ),
+                const SizedBox(width: gap),
+                SizedBox(
+                  width: sideW,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      MapLegend(map: map, vertical: true),
+                      const SizedBox(height: 22),
+                      _Stat(value: '${stats.count}', label: s.t('days_filled')),
+                      const SizedBox(height: 12),
+                      _Stat(value: '${stats.streak}', label: s.t('streak')),
+                      const SizedBox(height: 6),
+                    ],
+                  ),
+                ),
               ],
             ),
-            if (stats.count == 0) ...[
-              const SizedBox(height: 6),
-              Text(s.t('empty_year'), style: PixiText.label(), textAlign: TextAlign.center),
-            ],
-          ],
+          ),
         ),
       );
     });
@@ -328,14 +329,11 @@ class _Stat extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      crossAxisAlignment: CrossAxisAlignment.baseline,
-      textBaseline: TextBaseline.alphabetic,
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(value, style: PixiText.title(size: 18)),
-        const SizedBox(width: 6),
-        Text(label, style: PixiText.label()),
+        Text(value, style: PixiText.title(size: 24)),
+        Text(label, style: PixiText.label(size: 11), maxLines: 2),
       ],
     );
   }
