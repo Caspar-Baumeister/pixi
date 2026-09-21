@@ -89,20 +89,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       backgroundColor: PixiColors.paper,
       body: Stack(
         children: [
-          Positioned.fill(
-            child: IgnorePointer(
-              child: AnimatedContainer(
-                duration: const Duration(milliseconds: 500),
-                decoration: BoxDecoration(
-                  gradient: RadialGradient(
-                    center: const Alignment(0, -0.2),
-                    radius: 1.0,
-                    colors: [accent.withValues(alpha: 0.10), accent.withValues(alpha: 0)],
-                  ),
-                ),
-              ),
-            ),
-          ),
+          PageGlow(color: accent),
           SafeArea(
             child: Column(
               children: [
@@ -265,6 +252,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   }
 }
 
+const double _cardPad = 10;
+
 class _MapPage extends StatelessWidget {
   const _MapPage({
     required this.map,
@@ -290,7 +279,8 @@ class _MapPage extends StatelessWidget {
       const gap = 14.0;
       const padH = 16.0;
       final ratio = PixelGrid.heightForWidth(100) / 100;
-      final maxByHeight = (c.maxHeight - 24) / ratio;
+      const card = _cardPad * 2;
+      final maxByHeight = (c.maxHeight - 24 - card) / ratio + card;
       final maxByWidth = c.maxWidth - padH * 2 - sideW - gap;
       final gridW = maxByHeight.clamp(150.0, maxByWidth);
       return Center(
@@ -304,7 +294,11 @@ class _MapPage extends StatelessWidget {
               children: [
                 SizedBox(
                   width: gridW,
-                  child: PixelGrid(map: map, entries: entries, year: year, onTapDay: onTapDay),
+                  child: GridCard(
+                    color: map.baseColor,
+                    padding: const EdgeInsets.all(_cardPad),
+                    child: PixelGrid(map: map, entries: entries, year: year, onTapDay: onTapDay),
+                  ),
                 ),
                 const SizedBox(width: gap),
                 SizedBox(

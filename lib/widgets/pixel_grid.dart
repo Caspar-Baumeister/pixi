@@ -7,8 +7,93 @@ import '../core/strings.dart';
 import '../core/theme.dart';
 import '../models/pix_map.dart';
 
-/// Portrait year grid: 12 columns (months) × 31 rows (days), glowing in the
-/// map's base colour.
+/// Soft full-page glow in a map's base colour. Put it as the first child of
+/// a full-screen [Stack]; maps themselves sit on a [GridCard] so the glow
+/// never tints the cells.
+class PageGlow extends StatelessWidget {
+  const PageGlow({super.key, required this.color, this.center = const Alignment(-0.15, -0.1)});
+  final Color color;
+  final Alignment center;
+
+  @override
+  Widget build(BuildContext context) {
+    return Positioned.fill(
+      child: IgnorePointer(
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 500),
+          decoration: BoxDecoration(
+            gradient: RadialGradient(
+              center: center,
+              radius: 1.25,
+              colors: [
+                color.withValues(alpha: 0.34),
+                color.withValues(alpha: 0.16),
+                color.withValues(alpha: 0.0),
+              ],
+              stops: const [0.0, 0.55, 1.0],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// Body for a Scaffold with an AppBar: page glow reaching up behind a
+/// transparent AppBar. Use with `extendBodyBehindAppBar: true` and
+/// `appBar: AppBar(backgroundColor: Colors.transparent, ...)`.
+class GlowBody extends StatelessWidget {
+  const GlowBody({super.key, required this.color, required this.child});
+  final Color color;
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      children: [
+        PageGlow(color: color, center: const Alignment(-0.15, -0.35)),
+        Positioned.fill(
+          child: Padding(
+            padding: EdgeInsets.only(top: MediaQuery.paddingOf(context).top),
+            child: MediaQuery.removePadding(context: context, removeTop: true, child: child),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+/// White card with a soft shadow in the map colour, used under every map.
+class GridCard extends StatelessWidget {
+  const GridCard({
+    super.key,
+    required this.color,
+    required this.child,
+    this.padding = const EdgeInsets.all(10),
+    this.radius = 18,
+  });
+  final Color color;
+  final Widget child;
+  final EdgeInsets padding;
+  final double radius;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: padding,
+      decoration: BoxDecoration(
+        color: PixiColors.card,
+        borderRadius: BorderRadius.circular(radius),
+        boxShadow: [
+          BoxShadow(color: color.withValues(alpha: 0.18), blurRadius: 24, offset: const Offset(0, 8)),
+        ],
+      ),
+      child: child,
+    );
+  }
+}
+
+/// Portrait year grid: 12 columns (months) × 31 rows (days).
 class PixelGrid extends StatelessWidget {
   const PixelGrid({
     super.key,
@@ -17,7 +102,7 @@ class PixelGrid extends StatelessWidget {
     required this.year,
     this.onTapDay,
     this.showLabels = true,
-    this.glow = true,
+    this.glow = false,
     this.gapFactor = 0.18,
     this.highlight,
     this.emptyColor = PixiColors.emptyCell,

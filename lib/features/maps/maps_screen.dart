@@ -25,14 +25,18 @@ class MapsScreen extends ConsumerWidget {
 
     return Scaffold(
       backgroundColor: PixiColors.paper,
+      extendBodyBehindAppBar: true,
       appBar: AppBar(
+        backgroundColor: Colors.transparent,
         title: Text(s.t('maps_title'), style: PixiText.title(size: 20)),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_rounded),
           onPressed: () => Navigator.of(context).pop(),
         ),
       ),
-      body: Column(
+      body: GlowBody(
+        color: (maps.isEmpty ? PixiColors.faint : maps[ref.watch(selectedMapIndexProvider).clamp(0, maps.length - 1)].baseColor),
+        child: Column(
         children: [
           Expanded(
             child: ReorderableListView.builder(
@@ -109,6 +113,7 @@ class MapsScreen extends ConsumerWidget {
             ),
           ),
         ],
+      ),
       ),
     );
   }

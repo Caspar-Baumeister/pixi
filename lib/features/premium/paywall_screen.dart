@@ -10,6 +10,7 @@ import '../../data/providers.dart';
 import '../../models/templates.dart';
 import '../../services/premium_service.dart';
 import '../../widgets/pixi_cat.dart';
+import '../../widgets/pixel_grid.dart';
 import '../../widgets/ui.dart';
 
 enum PaywallReason { maps, stats, settings }
@@ -84,19 +85,7 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
       backgroundColor: PixiColors.paper,
       body: Stack(
         children: [
-          Positioned.fill(
-            child: IgnorePointer(
-              child: DecoratedBox(
-                decoration: BoxDecoration(
-                  gradient: RadialGradient(
-                    center: const Alignment(0, -0.5),
-                    radius: 0.9,
-                    colors: [accent.withValues(alpha: 0.16), accent.withValues(alpha: 0)],
-                  ),
-                ),
-              ),
-            ),
-          ),
+          PageGlow(color: accent),
           SafeArea(
             child: Column(
               children: [

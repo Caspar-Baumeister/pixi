@@ -162,21 +162,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
       backgroundColor: PixiColors.paper,
       body: Stack(
         children: [
-          // soft page glow in the accent colour
-          Positioned.fill(
-            child: IgnorePointer(
-              child: AnimatedContainer(
-                duration: const Duration(milliseconds: 600),
-                decoration: BoxDecoration(
-                  gradient: RadialGradient(
-                    center: const Alignment(0, -0.35),
-                    radius: 0.9,
-                    colors: [accent.withValues(alpha: 0.13), accent.withValues(alpha: 0)],
-                  ),
-                ),
-              ),
-            ),
-          ),
+          PageGlow(color: accent),
           SafeArea(
             child: Column(
               children: [
@@ -363,12 +349,17 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
             child: Center(
               child: SizedBox(
                 width: 150,
-                child: PixelGrid(
-                  map: map,
-                  entries: entries,
-                  year: yesterday.year,
-                  showLabels: false,
-                  highlight: yesterday,
+                child: GridCard(
+                  color: map.baseColor,
+                  padding: const EdgeInsets.all(9),
+                  radius: 14,
+                  child: PixelGrid(
+                    map: map,
+                    entries: entries,
+                    year: yesterday.year,
+                    showLabels: false,
+                    highlight: yesterday,
+                  ),
                 ),
               ),
             ),

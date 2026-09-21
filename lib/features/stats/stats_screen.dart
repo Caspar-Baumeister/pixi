@@ -199,14 +199,18 @@ class _StatsScreenState extends ConsumerState<StatsScreen> {
 
     return Scaffold(
       backgroundColor: PixiColors.paper,
+      extendBodyBehindAppBar: true,
       appBar: AppBar(
+        backgroundColor: Colors.transparent,
         title: Text('${s.t('stats_title')} · ${s.r(map.title)}', style: PixiText.title(size: 18)),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_rounded),
           onPressed: () => Navigator.of(context).pop(),
         ),
       ),
-      body: premium
+      body: GlowBody(
+        color: map.baseColor,
+        child: premium
           ? content
           : Stack(
               children: [
@@ -246,6 +250,7 @@ class _StatsScreenState extends ConsumerState<StatsScreen> {
                 ),
               ],
             ),
+      ),
     );
   }
 }

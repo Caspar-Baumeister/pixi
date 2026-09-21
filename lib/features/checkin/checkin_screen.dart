@@ -93,20 +93,7 @@ class _CheckinScreenState extends ConsumerState<CheckinScreen> {
       backgroundColor: PixiColors.paper,
       body: Stack(
         children: [
-          Positioned.fill(
-            child: IgnorePointer(
-              child: AnimatedContainer(
-                duration: const Duration(milliseconds: 500),
-                decoration: BoxDecoration(
-                  gradient: RadialGradient(
-                    center: const Alignment(0, -0.4),
-                    radius: 0.9,
-                    colors: [accent.withValues(alpha: 0.16), accent.withValues(alpha: 0)],
-                  ),
-                ),
-              ),
-            ),
-          ),
+          PageGlow(color: accent),
           SafeArea(
             child: Column(
               children: [
@@ -306,13 +293,18 @@ class _Summary extends ConsumerWidget {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            PixelGrid(
-                              map: m,
-                              entries: data.entriesFor(m.id),
-                              year: date.year,
-                              showLabels: false,
-                              highlight: date,
-                              gapFactor: 0.25,
+                            GridCard(
+                              color: m.baseColor,
+                              padding: const EdgeInsets.all(7),
+                              radius: 12,
+                              child: PixelGrid(
+                                map: m,
+                                entries: data.entriesFor(m.id),
+                                year: date.year,
+                                showLabels: false,
+                                highlight: date,
+                                gapFactor: 0.25,
+                              ),
                             ),
                             const SizedBox(height: 6),
                             Text(s.r(m.title), style: PixiText.label(size: 11), maxLines: 1, overflow: TextOverflow.ellipsis),

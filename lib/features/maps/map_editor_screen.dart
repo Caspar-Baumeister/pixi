@@ -179,7 +179,9 @@ class _MapEditorScreenState extends ConsumerState<MapEditorScreen> {
 
     return Scaffold(
       backgroundColor: PixiColors.paper,
+      extendBodyBehindAppBar: true,
       appBar: AppBar(
+        backgroundColor: Colors.transparent,
         title: Text(widget.isNew ? s.t('new_map') : s.t('edit_map'), style: PixiText.title(size: 20)),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_rounded),
@@ -189,13 +191,20 @@ class _MapEditorScreenState extends ConsumerState<MapEditorScreen> {
           TextButton(onPressed: _save, child: Text(s.t('save'), style: PixiText.button(color: PixiColors.ink))),
         ],
       ),
-      body: ListView(
+      body: GlowBody(
+        color: preview.baseColor,
+        child: ListView(
         padding: const EdgeInsets.fromLTRB(24, 8, 24, 40),
         children: [
           Center(
             child: SizedBox(
-              width: 120,
-              child: PixelGrid(map: preview, entries: entries, year: year, showLabels: false),
+              width: 130,
+              child: GridCard(
+                color: preview.baseColor,
+                padding: const EdgeInsets.all(9),
+                radius: 14,
+                child: PixelGrid(map: preview, entries: entries, year: year, showLabels: false),
+              ),
             ),
           ),
           const SizedBox(height: 10),
@@ -309,6 +318,7 @@ class _MapEditorScreenState extends ConsumerState<MapEditorScreen> {
               ),
             ),
         ],
+      ),
       ),
     );
   }
