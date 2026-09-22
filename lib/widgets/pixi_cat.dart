@@ -41,7 +41,7 @@ class CatAnims {
   static const happy = CatAnim('happy', 5, [1, 2, 3, 4, 3, 5, 1], [1200, 110, 80, 170, 80, 110, 300]);
   static const gym = CatAnim.animated('gym', 'assets/cats/gym.webp');
   static const bell = CatAnim('bell', 2, [1, 2, 1, 2], [1500, 260, 140, 260]);
-  static const sleep = CatAnim('sleep', 5, [1, 2, 3, 2, 1, 4, 5, 4], [320, 320, 420, 320, 320, 320, 420, 320]);
+  static const sleep = CatAnim.animated('sleep', 'assets/cats/sleep.webp');
 
   static final Map<String, CatAnim> all = {
     for (final a in [idle, wave, curious, sad, happy, gym, bell, sleep]) a.id: a,

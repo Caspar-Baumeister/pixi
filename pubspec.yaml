@@ -47,7 +47,7 @@ flutter:
     - assets/cats/happy/
     - assets/cats/gym.webp
     - assets/cats/bell/
-    - assets/cats/sleep/
+    - assets/cats/sleep.webp
     - assets/icon/
 
   fonts:
