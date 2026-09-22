@@ -39,7 +39,7 @@ class CatAnims {
   static const curious = CatAnim('curious', 3, [1, 2, 1, 3], [1500, 1000, 600, 1000]);
   static const sad = CatAnim.animated('sad', 'assets/cats/sad.webp');
   static const happy = CatAnim('happy', 5, [1, 2, 3, 4, 3, 5, 1], [1200, 110, 80, 170, 80, 110, 300]);
-  static const gym = CatAnim.animated('gym', 'assets/cats/gym.webp');
+  static const gym = CatAnim('gym', 2, [1, 2], [700, 900]);
   static const bell = CatAnim('bell', 2, [1, 2, 1, 2], [1500, 260, 140, 260]);
   static const sleep = CatAnim.animated('sleep', 'assets/cats/sleep.webp');
 
