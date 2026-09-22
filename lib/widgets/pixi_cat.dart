@@ -11,7 +11,15 @@ import '../models/pix_map.dart';
 /// like classic animation with holds, so a handful of clean drawings is
 /// enough.
 class CatAnim {
-  const CatAnim(this.id, this.frames, this.seq, this.ms);
+  const CatAnim(this.id, this.frames, this.seq, this.ms) : file = null;
+
+  /// A single animated file (animated WebP/GIF) that Flutter loops itself.
+  const CatAnim.animated(this.id, this.file)
+      : frames = 0,
+        seq = const [1],
+        ms = const [1000];
+
+  final String? file;
 
   final String id;
   final int frames;
@@ -25,7 +33,8 @@ class CatAnims {
   CatAnims._();
 
   /// Default cat: sits, blinks now and then.
-  static const idle = CatAnim('idle', 2, [1, 2, 1, 2, 1], [2600, 130, 170, 130, 2200]);
+  /// Sit → stretch → sit: smooth 12 fps loop from the generated video.
+  static const idle = CatAnim.animated('stretch', 'assets/cats/stretch.webp');
   static const wave = CatAnim('wave', 4, [1, 2, 3, 4, 3, 4, 3, 2], [1400, 140, 170, 170, 170, 170, 170, 140]);
   static const curious = CatAnim('curious', 3, [1, 2, 1, 3], [1500, 1000, 600, 1000]);
   static const sad = CatAnim('sad', 3, [1, 2, 1, 3], [1400, 900, 500, 1100]);
@@ -72,6 +81,10 @@ class PixiCat extends StatefulWidget {
 
   static Future<void> precache(BuildContext context) async {
     for (final a in CatAnims.all.values) {
+      if (a.file != null) {
+        await precacheImage(AssetImage(a.file!), context);
+        continue;
+      }
       for (var i = 1; i <= a.frames; i++) {
         await precacheImage(AssetImage(a.frame(i)), context);
       }
@@ -107,6 +120,7 @@ class _PixiCatState extends State<PixiCat> {
     _timer?.cancel();
     if (!widget.animate) return;
     final a = _anim;
+    if (a.file != null) return; // the image widget animates on its own
     _timer = Timer(Duration(milliseconds: a.ms[_step % a.ms.length]), () {
       if (!mounted) return;
       setState(() => _step = (_step + 1) % a.seq.length);
@@ -124,7 +138,7 @@ class _PixiCatState extends State<PixiCat> {
   Widget build(BuildContext context) {
     final a = _anim;
     Widget img = Image.asset(
-      a.frame(a.seq[_step % a.seq.length]),
+      a.file ?? a.frame(a.seq[_step % a.seq.length]),
       width: widget.size,
       height: widget.size,
       fit: BoxFit.contain,
