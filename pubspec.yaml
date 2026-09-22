@@ -43,9 +43,9 @@ flutter:
     - assets/cats/stretch.webp
     - assets/cats/wave/
     - assets/cats/curious/
-    - assets/cats/sad/
+    - assets/cats/sad.webp
     - assets/cats/happy/
-    - assets/cats/gym/
+    - assets/cats/gym.webp
     - assets/cats/bell/
     - assets/cats/sleep/
     - assets/icon/
