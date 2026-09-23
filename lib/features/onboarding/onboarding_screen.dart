@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:purchases_flutter/purchases_flutter.dart';
 
 import '../../core/dates.dart';
 import '../../core/demo_data.dart';
@@ -12,13 +13,15 @@ import '../../data/providers.dart';
 import '../../models/pix_map.dart';
 import '../../models/templates.dart';
 import '../../services/notification_service.dart';
+import '../../services/premium_service.dart';
+import '../premium/paywall_screen.dart';
 import '../../widgets/circle_year.dart';
 import '../../widgets/links.dart';
 import '../../widgets/pixel_grid.dart';
 import '../../widgets/pixi_cat.dart';
 import '../../widgets/ui.dart';
 
-enum _Step { hi, name, pick, how, time, circle, stats, corr, go }
+enum _Step { hi, name, pick, how, time, circle, stats, corr, plan, go }
 
 /// Long, personal onboarding (structure modelled on Amy): progress bar,
 /// sketched cat, one question per screen, full-width CTA.
@@ -47,6 +50,10 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
   final Set<String> _extraAdded = {};
   bool _busy = false;
   bool? _reminderOn;
+
+  // soft paywall
+  List<Package>? _packages;
+  PackageType _plan = PackageType.lifetime;
 
   @override
   void initState() {
@@ -102,6 +109,10 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
         _go(_Step.corr);
         break;
       case _Step.corr:
+        _loadPackages();
+        _go(_Step.plan);
+        break;
+      case _Step.plan:
         _go(_Step.go);
         break;
       case _Step.go:
@@ -151,6 +162,30 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
     }
     await notifier.flush();
     if (mounted) setState(() => _busy = false);
+  }
+
+  Future<void> _loadPackages() async {
+    if (_packages != null) return;
+    final p = await PremiumService.instance.packages();
+    if (mounted) setState(() => _packages = p);
+  }
+
+  Package? _pkg(PackageType t) => _packages?.where((p) => p.packageType == t).firstOrNull;
+
+  Future<void> _buyPlan() async {
+    final pkg = _pkg(_plan);
+    if (pkg == null) {
+      _next();
+      return;
+    }
+    setState(() => _busy = true);
+    final ok = await PremiumService.instance.purchase(pkg);
+    if (!mounted) return;
+    setState(() => _busy = false);
+    if (ok) {
+      ref.read(appProvider.notifier).updateSettings((st) => st.copyWith(premium: true));
+    }
+    _next();
   }
 
   Future<void> _askReminder() async {
@@ -259,6 +294,15 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                       _next();
                     },
             ),
+          ],
+        );
+      case _Step.plan:
+        return Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            PrimaryButton(label: s.t('ob_plan_cta'), loading: _busy, onPressed: _buyPlan),
+            const SizedBox(height: 4),
+            SecondaryButton(label: s.t('ob_plan_later'), onPressed: _busy ? null : _next),
           ],
         );
       case _Step.go:
@@ -496,6 +540,38 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                 ),
             ],
           ),
+        ]);
+
+      case _Step.plan:
+        final life = _pkg(PackageType.lifetime);
+        final yearly = _pkg(PackageType.annual);
+        return _scroll([
+          const SizedBox(height: 8),
+          _header(
+            s,
+            title: s.t('ob_plan_title'),
+            subtitle: s.t('ob_plan_sub'),
+            illustration: GlowingCat(color: accent, size: 130, catId: 'happy'),
+          ),
+          const SizedBox(height: 18),
+          PlanTile(
+            title: s.t('plan_life'),
+            price: life?.storeProduct.priceString ?? s.t('plan_life_price'),
+            sub: s.t('plan_life_sub'),
+            selected: _plan == PackageType.lifetime,
+            onTap: () => setState(() => _plan = PackageType.lifetime),
+            badge: s.isDe ? 'Beliebt' : 'Popular',
+          ),
+          const SizedBox(height: 10),
+          PlanTile(
+            title: s.t('plan_year'),
+            price: yearly?.storeProduct.priceString ?? s.t('plan_year_price'),
+            sub: s.t('plan_year_sub'),
+            selected: _plan == PackageType.annual,
+            onTap: () => setState(() => _plan = PackageType.annual),
+          ),
+          const SizedBox(height: 12),
+          Text(s.t('sub_disclosure'), style: PixiText.label(size: 11), textAlign: TextAlign.center),
         ]);
 
       case _Step.go:

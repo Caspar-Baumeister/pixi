@@ -7,6 +7,7 @@ import '../../data/providers.dart';
 import '../../models/pix_map.dart';
 import '../../models/templates.dart';
 import '../../widgets/pixel_grid.dart';
+import '../../widgets/pixi_cat.dart';
 import '../../widgets/ui.dart';
 
 /// Edit title, question, base colour and levels of a map.
@@ -252,6 +253,60 @@ class _MapEditorScreenState extends ConsumerState<MapEditorScreen> {
                   ),
                 ),
             ],
+          ),
+          const SizedBox(height: 22),
+          Text(s.t('map_cat'), style: PixiText.label()),
+          const SizedBox(height: 4),
+          Text(s.t('map_cat_sub'), style: PixiText.label(size: 12, color: PixiColors.muted)),
+          const SizedBox(height: 10),
+          SizedBox(
+            height: 104,
+            child: ListView.separated(
+              scrollDirection: Axis.horizontal,
+              itemCount: CatAnims.pickable.length,
+              separatorBuilder: (_, __) => const SizedBox(width: 10),
+              itemBuilder: (context, i) {
+                final cat = CatAnims.pickable[i];
+                final selected = CatAnims.forMap(_map).id == cat.id;
+                return GestureDetector(
+                  onTap: () => setState(() => _map = _map.copyWith(catId: cat.id)),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      AnimatedContainer(
+                        duration: const Duration(milliseconds: 180),
+                        width: 72,
+                        height: 72,
+                        decoration: BoxDecoration(
+                          color: PixiColors.card,
+                          shape: BoxShape.circle,
+                          border: Border.all(
+                            color: selected ? PixiColors.ink : PixiColors.line,
+                            width: selected ? 2 : 1,
+                          ),
+                          boxShadow: [
+                            if (selected)
+                              BoxShadow(color: preview.baseColor.withValues(alpha: 0.35), blurRadius: 18),
+                          ],
+                        ),
+                        clipBehavior: Clip.antiAlias,
+                        child: PixiCat(size: 68, anim: cat, animate: selected),
+                      ),
+                      const SizedBox(height: 4),
+                      SizedBox(
+                        width: 76,
+                        child: Text(
+                          s.t(CatAnims.labelKey(cat.id)),
+                          textAlign: TextAlign.center,
+                          overflow: TextOverflow.ellipsis,
+                          style: PixiText.label(size: 11, color: selected ? PixiColors.ink : PixiColors.muted),
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              },
+            ),
           ),
           const SizedBox(height: 22),
           Text(s.t('map_levels'), style: PixiText.label()),

@@ -41,13 +41,19 @@ flutter:
   assets:
     - assets/cats/idle/
     - assets/cats/stretch.webp
+    - assets/cats/neutral.webp
+    - assets/cats/neutral_still.png
+    - assets/cats/stretch_still.png
     - assets/cats/wave/
     - assets/cats/curious/
     - assets/cats/sad.webp
+    - assets/cats/sad_still.png
     - assets/cats/happy/
     - assets/cats/gym.webp
+    - assets/cats/gym_still.png
     - assets/cats/bell/
     - assets/cats/sleep.webp
+    - assets/cats/sleep_still.png
     - assets/icon/
 
   fonts:

@@ -11,15 +11,22 @@ import '../models/pix_map.dart';
 /// like classic animation with holds, so a handful of clean drawings is
 /// enough.
 class CatAnim {
-  const CatAnim(this.id, this.frames, this.seq, this.ms) : file = null;
+  const CatAnim(this.id, this.frames, this.seq, this.ms)
+      : file = null,
+        still = null;
 
   /// A single animated file (animated WebP/GIF) that Flutter loops itself.
-  const CatAnim.animated(this.id, this.file)
+  /// [still] is one hand-picked, well-centred frame used whenever the cat must
+  /// hold still – above all for shared / exported images.
+  const CatAnim.animated(this.id, this.file, {this.still})
       : frames = 0,
         seq = const [1],
         ms = const [1000];
 
   final String? file;
+
+  /// Poster frame for exports; falls back to the first frame.
+  final String? still;
 
   final String id;
   final int frames;
@@ -34,18 +41,32 @@ class CatAnims {
 
   /// Default cat: sits, blinks now and then.
   /// Sit → stretch → sit: smooth 12 fps loop from the generated video.
-  static const idle = CatAnim.animated('stretch', 'assets/cats/stretch.webp');
+  static const idle = CatAnim.animated('stretch', 'assets/cats/stretch.webp',
+      still: 'assets/cats/stretch_still.png');
+
+  /// Calm cat that fits any topic – the default for custom maps.
+  static const neutral = CatAnim.animated('neutral', 'assets/cats/neutral.webp',
+      still: 'assets/cats/neutral_still.png');
   static const wave = CatAnim('wave', 4, [1, 2, 3, 4, 3, 4, 3, 2], [1400, 140, 170, 170, 170, 170, 170, 140]);
   static const curious = CatAnim('curious', 3, [1, 2, 1, 3], [1500, 1000, 600, 1000]);
-  static const sad = CatAnim.animated('sad', 'assets/cats/sad.webp');
+  static const sad = CatAnim.animated('sad', 'assets/cats/sad.webp',
+      still: 'assets/cats/sad_still.png');
   static const happy = CatAnim('happy', 5, [1, 2, 3, 4, 3, 5, 1], [1200, 110, 80, 170, 80, 110, 300]);
-  static const gym = CatAnim.animated('gym', 'assets/cats/gym.webp');
+  static const gym = CatAnim.animated('gym', 'assets/cats/gym.webp',
+      still: 'assets/cats/gym_still.png');
   static const bell = CatAnim('bell', 2, [1, 2, 1, 2], [1500, 260, 140, 260]);
-  static const sleep = CatAnim.animated('sleep', 'assets/cats/sleep.webp');
+  static const sleep = CatAnim.animated('sleep', 'assets/cats/sleep.webp',
+      still: 'assets/cats/sleep_still.png');
 
   static final Map<String, CatAnim> all = {
-    for (final a in [idle, wave, curious, sad, happy, gym, bell, sleep]) a.id: a,
+    for (final a in [idle, neutral, wave, curious, sad, happy, gym, bell, sleep]) a.id: a,
   };
+
+  /// Cats the user can pick for a map, in the order shown in the editor.
+  static const pickable = [neutral, idle, happy, wave, curious, gym, sleep, sad, bell];
+
+  /// Label key for the picker (resolved via `S.t`).
+  static String labelKey(String id) => 'cat_$id';
 
   static CatAnim byId(String id) {
     if (id == 'pixi' || id.isEmpty || id == 'stretch') return idle;
@@ -83,6 +104,7 @@ class PixiCat extends StatefulWidget {
     for (final a in CatAnims.all.values) {
       if (a.file != null) {
         await precacheImage(AssetImage(a.file!), context);
+        if (a.still != null) await precacheImage(AssetImage(a.still!), context);
         continue;
       }
       for (var i = 1; i <= a.frames; i++) {
@@ -137,8 +159,11 @@ class _PixiCatState extends State<PixiCat> {
   @override
   Widget build(BuildContext context) {
     final a = _anim;
+    final asset = !widget.animate && a.still != null
+        ? a.still!
+        : (a.file ?? a.frame(a.seq[_step % a.seq.length]));
     Widget img = Image.asset(
-      a.file ?? a.frame(a.seq[_step % a.seq.length]),
+      asset,
       width: widget.size,
       height: widget.size,
       fit: BoxFit.contain,

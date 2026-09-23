@@ -120,7 +120,7 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
                       _Feature(icon: Icons.insights_rounded, text: s.t('feat_stats')),
                       _Feature(icon: Icons.pets_rounded, text: s.t('feat_support')),
                       const SizedBox(height: 22),
-                      _PlanTile(
+                      PlanTile(
                         title: s.t('plan_life'),
                         price: life?.storeProduct.priceString ?? s.t('plan_life_price'),
                         sub: s.t('plan_life_sub'),
@@ -129,7 +129,7 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
                         badge: s.isDe ? 'Beliebt' : 'Popular',
                       ),
                       const SizedBox(height: 10),
-                      _PlanTile(
+                      PlanTile(
                         title: s.t('plan_year'),
                         price: year?.storeProduct.priceString ?? s.t('plan_year_price'),
                         sub: s.t('plan_year_sub'),
@@ -200,8 +200,11 @@ class _Feature extends StatelessWidget {
   }
 }
 
-class _PlanTile extends StatelessWidget {
-  const _PlanTile({
+/// One selectable plan row (lifetime / yearly). Also used by the onboarding
+/// soft paywall.
+class PlanTile extends StatelessWidget {
+  const PlanTile({
+    super.key,
     required this.title,
     required this.price,
     required this.sub,

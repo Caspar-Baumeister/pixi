@@ -13,6 +13,7 @@ import '../app.dart';
 import '../data/providers.dart';
 import '../features/checkin/checkin_screen.dart';
 import '../features/circle/circle_screen.dart';
+import '../features/maps/map_editor_screen.dart';
 import '../features/maps/maps_screen.dart';
 import '../features/maps/templates_screen.dart';
 import '../features/onboarding/onboarding_screen.dart';
@@ -90,6 +91,9 @@ String shotNav(String where, [String arg = '']) {
       break;
     case 'maps':
       push(const MapsScreen());
+      break;
+    case 'editor':
+      push(MapEditorScreen(mapId: mapId(arg.isEmpty ? 'mood' : arg)));
       break;
     case 'templates':
       push(const TemplatesScreen());

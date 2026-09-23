@@ -162,3 +162,62 @@ Correlation correlate(
   final diff = (hiN == 0 || loN == 0) ? null : hiSum / hiN - loSum / loN;
   return Correlation(sharedDays: n, r: r, diff: diff);
 }
+
+/// How often each level was logged in one month, plus the change against the
+/// month before. Index matches `map.levels`.
+class MonthColors {
+  MonthColors({
+    required this.year,
+    required this.month,
+    required this.counts,
+    required this.previous,
+  });
+
+  final int year;
+  final int month;
+  final List<int> counts;
+  final List<int> previous;
+
+  int get total => counts.fold(0, (a, b) => a + b);
+  int get previousTotal => previous.fold(0, (a, b) => a + b);
+
+  /// counts[i] - previous[i]
+  int delta(int i) => counts[i] - previous[i];
+
+  /// Level logged most often this month, null when the month is empty.
+  int? get top {
+    int? idx;
+    for (var i = 0; i < counts.length; i++) {
+      if (counts[i] == 0) continue;
+      if (idx == null || counts[i] > counts[idx]) idx = i;
+    }
+    return idx;
+  }
+
+  /// Biggest change against last month (by absolute value), null if flat.
+  int? get biggestMove {
+    int? idx;
+    for (var i = 0; i < counts.length; i++) {
+      if (delta(i) == 0) continue;
+      if (idx == null || delta(i).abs() > delta(idx).abs()) idx = i;
+    }
+    return idx;
+  }
+}
+
+MonthColors monthColors(PixMap map, Map<String, int> entries, int year, int month) {
+  final levels = map.levels.length;
+  final now = List<int>.filled(levels, 0);
+  final prev = List<int>.filled(levels, 0);
+  final pm = month == 1 ? 12 : month - 1;
+  final py = month == 1 ? year - 1 : year;
+
+  entries.forEach((k, v) {
+    final d = Dates.parse(k);
+    final lvl = v.clamp(0, levels - 1);
+    if (d.year == year && d.month == month) now[lvl]++;
+    if (d.year == py && d.month == pm) prev[lvl]++;
+  });
+
+  return MonthColors(year: year, month: month, counts: now, previous: prev);
+}

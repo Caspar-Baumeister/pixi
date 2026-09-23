@@ -39,6 +39,9 @@ class _StatsScreenState extends ConsumerState<StatsScreen> {
     if (map == null) return const Scaffold(body: SizedBox.shrink());
     final entries = data.entriesFor(map.id);
     final stats = computeStats(map, entries, year);
+    final today = DateTime.now();
+    final monthOf = year == today.year ? today.month : 12;
+    final month = monthColors(map, entries, year, monthOf);
     final others = data.maps.where((m) => m.id != map.id).toList();
     final other = others.where((m) => m.id == _otherId).firstOrNull ?? others.firstOrNull;
 
@@ -56,6 +59,8 @@ class _StatsScreenState extends ConsumerState<StatsScreen> {
             ),
           ),
         if (stats.count >= 3) ...[
+          _MonthCard(map: map, month: month, monthName: s.monthsLong[month.month - 1]),
+          const SizedBox(height: 12),
           Row(
             children: [
               Expanded(
@@ -408,4 +413,122 @@ class _CorrelationCard extends StatelessWidget {
           ],
         ),
       );
+}
+
+
+/// Colours of the current month with the change against the month before.
+class _MonthCard extends StatelessWidget {
+  const _MonthCard({required this.map, required this.month, required this.monthName});
+  final PixMap map;
+  final MonthColors month;
+  final String monthName;
+
+  @override
+  Widget build(BuildContext context) {
+    final s = S.of(context);
+    final maxCount = max(1, month.counts.fold<int>(0, (a, b) => max(a, b)));
+    return PaperCard(
+      glowColor: map.baseColor,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Expanded(child: Text('${s.t('this_month')} · $monthName', style: PixiText.label())),
+              Text('${month.total} ${s.t('days_short')}', style: PixiText.label(size: 12, color: PixiColors.muted)),
+            ],
+          ),
+          const SizedBox(height: 4),
+          Text(s.t('this_month_sub'), style: PixiText.label(size: 11, color: PixiColors.muted)),
+          const SizedBox(height: 14),
+          if (month.total == 0)
+            Text(s.t('month_no_data'), style: PixiText.body1(color: PixiColors.muted))
+          else
+            for (var i = map.levels.length - 1; i >= 0; i--)
+              Padding(
+                padding: const EdgeInsets.only(bottom: 10),
+                child: Row(
+                  children: [
+                    Container(
+                      width: 14,
+                      height: 14,
+                      decoration: BoxDecoration(
+                        color: map.levels[i].color,
+                        borderRadius: BorderRadius.circular(4),
+                        border: Border.all(color: PixiColors.line),
+                      ),
+                    ),
+                    const SizedBox(width: 10),
+                    SizedBox(
+                      width: 76,
+                      child: Text(s.r(map.levels[i].label),
+                          style: PixiText.label(size: 12, color: PixiColors.ink), overflow: TextOverflow.ellipsis),
+                    ),
+                    Expanded(
+                      child: Stack(
+                        children: [
+                          Container(
+                            height: 10,
+                            decoration: BoxDecoration(
+                              color: PixiColors.paperDark,
+                              borderRadius: BorderRadius.circular(5),
+                            ),
+                          ),
+                          FractionallySizedBox(
+                            widthFactor: (month.counts[i] / maxCount).clamp(0.0, 1.0),
+                            child: Container(
+                              height: 10,
+                              decoration: BoxDecoration(
+                                color: map.levels[i].color,
+                                borderRadius: BorderRadius.circular(5),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(width: 10),
+                    SizedBox(
+                      width: 26,
+                      child: Text('${month.counts[i]}',
+                          textAlign: TextAlign.right, style: PixiText.label(size: 12, color: PixiColors.ink)),
+                    ),
+                    const SizedBox(width: 6),
+                    SizedBox(width: 46, child: _Delta(value: month.delta(i))),
+                  ],
+                ),
+              ),
+          if (month.total > 0 && month.previousTotal > 0) ...[
+            const SizedBox(height: 2),
+            Text(
+              '${s.t('vs_last_month')}: ${month.previousTotal} ${s.t('days_short')}',
+              style: PixiText.label(size: 11, color: PixiColors.muted),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+}
+
+class _Delta extends StatelessWidget {
+  const _Delta({required this.value});
+  final int value;
+
+  @override
+  Widget build(BuildContext context) {
+    if (value == 0) {
+      return Text('–', textAlign: TextAlign.right, style: PixiText.label(size: 12, color: PixiColors.muted));
+    }
+    final up = value > 0;
+    final color = up ? PixiColors.ink : PixiColors.muted;
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.end,
+      children: [
+        Icon(up ? Icons.arrow_upward_rounded : Icons.arrow_downward_rounded, size: 12, color: color),
+        const SizedBox(width: 2),
+        Text('${value.abs()}', style: PixiText.label(size: 12, color: color)),
+      ],
+    );
+  }
 }

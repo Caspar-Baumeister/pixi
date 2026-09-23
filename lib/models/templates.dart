@@ -272,5 +272,6 @@ PixMap customMap(String id, Color base) => PixMap(
       ],
       templateId: 'custom',
       category: 'custom',
+      catId: 'neutral',
       createdAt: DateTime.now(),
     );
