@@ -47,7 +47,8 @@ flutter:
     - assets/cats/curious/
     - assets/cats/sad.webp
     - assets/cats/sad_still.png
-    - assets/cats/happy/
+    - assets/cats/happy.webp
+    - assets/cats/happy_still.png
     - assets/cats/gym.webp
     - assets/cats/gym_still.png
     - assets/cats/bell/
