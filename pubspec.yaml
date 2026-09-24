@@ -52,7 +52,8 @@ flutter:
     - assets/cats/happy_still.png
     - assets/cats/gym.webp
     - assets/cats/gym_still.png
-    - assets/cats/bell/
+    - assets/cats/bell.webp
+    - assets/cats/bell_still.png
     - assets/cats/sleep.webp
     - assets/cats/sleep_still.png
     - assets/icon/

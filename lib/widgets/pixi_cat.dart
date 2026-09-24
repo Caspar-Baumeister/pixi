@@ -54,7 +54,7 @@ class CatAnims {
   static const happy = CatAnim.animated('happy', 'assets/cats/happy.webp', still: 'assets/cats/happy_still.png');
   static const gym = CatAnim.animated('gym', 'assets/cats/gym.webp',
       still: 'assets/cats/gym_still.png');
-  static const bell = CatAnim('bell', 2, [1, 2, 1, 2], [1500, 260, 140, 260]);
+  static const bell = CatAnim.animated('bell', 'assets/cats/bell.webp', still: 'assets/cats/bell_still.png');
   static const sleep = CatAnim.animated('sleep', 'assets/cats/sleep.webp',
       still: 'assets/cats/sleep_still.png');
 
