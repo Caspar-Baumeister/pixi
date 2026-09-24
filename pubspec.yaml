@@ -43,7 +43,8 @@ flutter:
     - assets/cats/stretch.webp
     - assets/cats/neutral_still.png
     - assets/cats/stretch_still.png
-    - assets/cats/wave/
+    - assets/cats/wave.webp
+    - assets/cats/wave_still.png
     - assets/cats/curious/
     - assets/cats/sad.webp
     - assets/cats/sad_still.png

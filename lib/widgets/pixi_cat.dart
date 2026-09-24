@@ -47,7 +47,7 @@ class CatAnims {
   /// Calm cat that fits any topic – the default for custom maps.
   static const neutral = CatAnim.animated('neutral', 'assets/cats/neutral_still.png',
       still: 'assets/cats/neutral_still.png');
-  static const wave = CatAnim('wave', 4, [1, 2, 3, 4, 3, 4, 3, 2], [1400, 140, 170, 170, 170, 170, 170, 140]);
+  static const wave = CatAnim.animated('wave', 'assets/cats/wave.webp', still: 'assets/cats/wave_still.png');
   static const curious = CatAnim('curious', 3, [1, 2, 1, 3], [1500, 1000, 600, 1000]);
   static const sad = CatAnim.animated('sad', 'assets/cats/sad.webp',
       still: 'assets/cats/sad_still.png');
