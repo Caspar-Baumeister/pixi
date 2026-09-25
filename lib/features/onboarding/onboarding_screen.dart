@@ -37,6 +37,7 @@ class OnboardingScreen extends ConsumerStatefulWidget {
 
 class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
   _Step _step = _Step.hi;
+  final _heroColor = ValueNotifier<Color>(templateById('mood').baseColor);
   bool _forward = true;
 
   final _name = TextEditingController();
@@ -73,6 +74,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
   @override
   void dispose() {
     _name.dispose();
+    _heroColor.dispose();
     super.dispose();
   }
 
@@ -210,7 +212,13 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
       backgroundColor: PixiColors.paper,
       body: Stack(
         children: [
-          PageGlow(color: accent),
+          if (_step == _Step.hi)
+            ValueListenableBuilder<Color>(
+              valueListenable: _heroColor,
+              builder: (_, c, __) => PageGlow(color: c),
+            )
+          else
+            PageGlow(color: accent),
           SafeArea(
             child: Column(
               children: [
@@ -347,7 +355,12 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
             s,
             title: s.t('ob_hi_title'),
             subtitle: s.t('ob_hi_sub'),
-            illustration: GlowingCat(color: accent, size: 200, catId: 'wave'),
+            illustration: HeroWheel(
+              templates: kTemplates,
+              size: 300,
+              catId: 'wave',
+              colorNotifier: _heroColor,
+            ),
           ),
         ]);
 

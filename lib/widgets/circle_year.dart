@@ -6,6 +6,7 @@ import '../core/dates.dart';
 import '../core/strings.dart';
 import '../core/theme.dart';
 import '../models/pix_map.dart';
+import '../models/templates.dart';
 import 'pixi_cat.dart';
 
 /// The year as a wheel, modelled on the calendar poster: 12 wedges, each a
@@ -413,34 +414,6 @@ class _WheelPainter extends CustomPainter {
     }
   }
 
-  /// Draws [text] centred at [centerAngle] along a circle, letters upright
-  /// with their top facing outwards (like the poster).
-  void _drawArcText(Canvas canvas, String text, Offset c, double r,
-      double centerAngle, TextStyle style) {
-    final painters = <TextPainter>[];
-    var total = 0.0;
-    for (final ch in text.characters) {
-      final tp = TextPainter(
-        text: TextSpan(text: ch, style: style),
-        textDirection: TextDirection.ltr,
-      )..layout();
-      painters.add(tp);
-      total += tp.width;
-    }
-    final totalAngle = total / r;
-    var a = centerAngle - totalAngle / 2;
-    for (final tp in painters) {
-      final half = tp.width / 2 / r;
-      final mid = a + half;
-      canvas.save();
-      canvas.translate(c.dx + r * cos(mid), c.dy + r * sin(mid));
-      canvas.rotate(mid + pi / 2);
-      tp.paint(canvas, Offset(-tp.width / 2, -tp.height / 2));
-      canvas.restore();
-      a += half * 2;
-    }
-  }
-
   static Offset _centroid(List<Offset> poly) {
     var x = 0.0, y = 0.0, area = 0.0;
     for (var i = 0; i < poly.length; i++) {
@@ -465,4 +438,273 @@ class _WheelPainter extends CustomPainter {
       old.year != year ||
       old.layout != layout ||
       old.showNumbers != showNumbers;
+}
+
+/// Draws [text] centred at [centerAngle] along a circle, letters upright
+/// with their top facing outwards (like the poster).
+void _drawArcText(Canvas canvas, String text, Offset c, double r,
+    double centerAngle, TextStyle style) {
+  final painters = <TextPainter>[];
+  var total = 0.0;
+  for (final ch in text.characters) {
+    final tp = TextPainter(
+      text: TextSpan(text: ch, style: style),
+      textDirection: TextDirection.ltr,
+    )..layout();
+    painters.add(tp);
+    total += tp.width;
+  }
+  final totalAngle = total / r;
+  var a = centerAngle - totalAngle / 2;
+  for (final tp in painters) {
+    final half = tp.width / 2 / r;
+    final mid = a + half;
+    canvas.save();
+    canvas.translate(c.dx + r * cos(mid), c.dy + r * sin(mid));
+    canvas.rotate(mid + pi / 2);
+    tp.paint(canvas, Offset(-tp.width / 2, -tp.height / 2));
+    canvas.restore();
+    a += half * 2;
+  }
+}
+
+
+// ---------------------------------------------------------------------------
+// Hero wheel for the very first onboarding screen: a fully filled year that
+// slowly turns and glides through the colour sets of the ready-made maps.
+// ---------------------------------------------------------------------------
+
+class HeroWheel extends StatefulWidget {
+  const HeroWheel({
+    super.key,
+    required this.templates,
+    this.size = 300,
+    this.catId = 'wave',
+    this.hold = const Duration(milliseconds: 2400),
+    this.fade = const Duration(milliseconds: 1500),
+    this.turn = const Duration(seconds: 80),
+    this.colorNotifier,
+  });
+
+  /// Colour sets to cycle through, in this order.
+  final List<MapTemplate> templates;
+  final double size;
+  final String catId;
+  final Duration hold;
+  final Duration fade;
+  /// One full rotation; `Duration.zero` disables turning.
+  final Duration turn;
+  /// Receives the current (blended) base colour, e.g. for the page glow.
+  final ValueNotifier<Color>? colorNotifier;
+
+  @override
+  State<HeroWheel> createState() => _HeroWheelState();
+}
+
+class _HeroWheelState extends State<HeroWheel> with TickerProviderStateMixin {
+  late final AnimationController _cycle;
+  late final AnimationController _spin;
+  int _index = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _cycle = AnimationController(vsync: this, duration: widget.hold + widget.fade)
+      ..addStatusListener((st) {
+        if (st == AnimationStatus.completed) {
+          setState(() => _index = (_index + 1) % widget.templates.length);
+          _cycle.forward(from: 0);
+        }
+      })
+      ..forward();
+    _spin = AnimationController(vsync: this, duration: widget.turn == Duration.zero ? const Duration(seconds: 1) : widget.turn);
+    if (widget.turn != Duration.zero) _spin.repeat();
+  }
+
+  @override
+  void dispose() {
+    _cycle.dispose();
+    _spin.dispose();
+    super.dispose();
+  }
+
+  /// 0 while holding, then eased 0..1 during the fade.
+  double get _t {
+    final holdFrac = widget.hold.inMilliseconds / (widget.hold + widget.fade).inMilliseconds;
+    final v = _cycle.value;
+    if (v <= holdFrac) return 0;
+    return Curves.easeInOut.transform((v - holdFrac) / (1 - holdFrac));
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final s = S.of(context);
+    final year = Dates.today().year;
+    final layout = _WheelLayout.forSize(widget.size, year);
+    final months = s.monthsLong.map((m) => m.toUpperCase()).toList();
+    return SizedBox(
+      width: widget.size,
+      height: widget.size,
+      child: Stack(
+        alignment: Alignment.center,
+        children: [
+          AnimatedBuilder(
+            animation: Listenable.merge([_cycle, _spin]),
+            builder: (context, _) {
+              final a = widget.templates[_index];
+              final b = widget.templates[(_index + 1) % widget.templates.length];
+              final t = _t;
+              final base = Color.lerp(a.baseColor, b.baseColor, t)!;
+              if (widget.colorNotifier != null && widget.colorNotifier!.value != base) {
+                WidgetsBinding.instance.addPostFrameCallback((_) {
+                  if (mounted) widget.colorNotifier!.value = base;
+                });
+              }
+              return Transform.rotate(
+                angle: _spin.value * 2 * pi,
+                child: CustomPaint(
+                  size: Size(widget.size, widget.size),
+                  painter: _HeroPainter(
+                    layout: layout,
+                    from: a.levels.map((l) => l.color).toList(),
+                    to: b.levels.map((l) => l.color).toList(),
+                    t: t,
+                    base: base,
+                    months: months,
+                  ),
+                ),
+              );
+            },
+          ),
+          PixiCat(size: layout.rIn * 1.7, catId: widget.catId),
+        ],
+      ),
+    );
+  }
+}
+
+class _HeroPainter extends CustomPainter {
+  _HeroPainter({
+    required this.layout,
+    required this.from,
+    required this.to,
+    required this.t,
+    required this.base,
+    required this.months,
+  });
+
+  final _WheelLayout layout;
+  final List<Color> from;
+  final List<Color> to;
+  final double t;
+  final Color base;
+  final List<String> months;
+
+  /// A stable, organic-looking "how intense was this day" value per cell.
+  static double _value(_Cell cell) {
+    final rnd = _Rng(cell.month * 131 + cell.day * 17);
+    final wave = 0.5 + 0.3 * sin(cell.month * 0.8 + cell.day * 0.22);
+    return (wave * 0.7 + rnd.next() * 0.3).clamp(0.0, 1.0);
+  }
+
+  static Color _pick(List<Color> palette, double v) {
+    if (palette.isEmpty) return Colors.white;
+    final i = (v * (palette.length - 1)).round().clamp(0, palette.length - 1);
+    return palette[i];
+  }
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final c = layout.c;
+    final ink = PixiColors.ink;
+
+    canvas.drawCircle(
+      c,
+      layout.rOuter,
+      Paint()
+        ..shader = RadialGradient(
+          colors: [
+            base.withValues(alpha: 0.55),
+            base.withValues(alpha: 0.22),
+            base.withValues(alpha: 0.05),
+            base.withValues(alpha: 0.0),
+          ],
+          stops: const [0.0, 0.25, 0.7, 1.0],
+        ).createShader(Rect.fromCircle(center: c, radius: layout.rOuter)),
+    );
+
+    final fill = Paint()..style = PaintingStyle.fill;
+    final stroke = Paint()
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = max(0.5, size.width / 520)
+      ..strokeJoin = StrokeJoin.round
+      ..color = ink.withValues(alpha: 0.55);
+    for (final cell in layout.cells) {
+      if (cell.poly.length < 3) continue;
+      final v = _value(cell);
+      fill.color = Color.lerp(_pick(from, v), _pick(to, v), t)!;
+      final path = Path()..addPolygon(cell.poly, true);
+      canvas.drawPath(path, fill);
+      canvas.drawPath(path, stroke);
+    }
+
+    final thin = Paint()
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = max(0.6, size.width / 480)
+      ..color = ink.withValues(alpha: 0.8);
+    for (var m = 0; m < 12; m++) {
+      final a = _WheelLayout._startAngle + m * pi / 6;
+      canvas.drawLine(
+        Offset(c.dx + layout.rIn * cos(a), c.dy + layout.rIn * sin(a)),
+        Offset(c.dx + layout.rTextIn * cos(a), c.dy + layout.rTextIn * sin(a)),
+        thin,
+      );
+    }
+    canvas.drawCircle(c, layout.rTextIn, thin);
+    canvas.drawCircle(c, layout.rTextOut, thin..strokeWidth = max(0.5, size.width / 600));
+    canvas.drawCircle(c, layout.rOuter, thin..strokeWidth = max(0.8, size.width / 400));
+
+    final dot = Paint()..color = ink.withValues(alpha: 0.75);
+    final dotR = max(0.6, size.width / 380);
+    const dotCount = 144;
+    for (var i = 0; i < dotCount; i++) {
+      final a = i * 2 * pi / dotCount;
+      canvas.drawCircle(Offset(c.dx + layout.rDots * cos(a), c.dy + layout.rDots * sin(a)), dotR, dot);
+    }
+
+    final monthStyle = TextStyle(
+      fontFamily: PixiText.display,
+      fontSize: max(6, size.width / 34),
+      letterSpacing: size.width / 300,
+      color: ink,
+      fontWeight: FontWeight.w500,
+      fontVariations: const [FontVariation('wght', 500)],
+    );
+    final rText = (layout.rTextOut + layout.rTextIn) / 2;
+    for (var m = 0; m < 12; m++) {
+      final centerA = _WheelLayout._startAngle + (m + 0.5) * pi / 6;
+      _drawArcText(canvas, months[m], c, rText, centerA, monthStyle);
+      final sepA = _WheelLayout._startAngle + m * pi / 6;
+      canvas.drawCircle(Offset(c.dx + rText * cos(sepA), c.dy + rText * sin(sepA)), dotR * 1.2, dot);
+    }
+
+    canvas.drawCircle(
+      c,
+      layout.rIn,
+      Paint()
+        ..shader = RadialGradient(
+          colors: [
+            Colors.white.withValues(alpha: 0.97),
+            Colors.white.withValues(alpha: 0.7),
+            base.withValues(alpha: 0.35),
+          ],
+          stops: const [0.0, 0.7, 1.0],
+        ).createShader(Rect.fromCircle(center: c, radius: layout.rIn)),
+    );
+    canvas.drawCircle(c, layout.rIn, thin..strokeWidth = max(0.6, size.width / 480));
+  }
+
+  @override
+  bool shouldRepaint(covariant _HeroPainter old) =>
+      old.t != t || old.from != from || old.to != to || old.base != base || old.layout != layout;
 }
