@@ -48,7 +48,7 @@ class CatAnims {
   static const neutral = CatAnim.animated('neutral', 'assets/cats/neutral_still.png',
       still: 'assets/cats/neutral_still.png');
   static const wave = CatAnim.animated('wave', 'assets/cats/wave.webp', still: 'assets/cats/wave_still.png');
-  static const curious = CatAnim('curious', 3, [1, 2, 1, 3], [1500, 1000, 600, 1000]);
+  static const curious = CatAnim.animated('curious', 'assets/cats/curious.webp', still: 'assets/cats/curious_still.png');
   static const sad = CatAnim.animated('sad', 'assets/cats/sad.webp',
       still: 'assets/cats/sad_still.png');
   static const happy = CatAnim.animated('happy', 'assets/cats/happy.webp', still: 'assets/cats/happy_still.png');

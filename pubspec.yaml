@@ -45,7 +45,8 @@ flutter:
     - assets/cats/stretch_still.png
     - assets/cats/wave.webp
     - assets/cats/wave_still.png
-    - assets/cats/curious/
+    - assets/cats/curious.webp
+    - assets/cats/curious_still.png
     - assets/cats/sad.webp
     - assets/cats/sad_still.png
     - assets/cats/happy.webp
