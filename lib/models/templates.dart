@@ -247,6 +247,7 @@ const List<MapTemplate> kTemplates = [
   ),
   MapTemplate(
     id: 'water',
+    catId: 'water',
     category: TemplateCategory.habits,
     baseColor: BaseColors.sky,
     levels: [

@@ -58,6 +58,8 @@ flutter:
     - assets/cats/bell_still.png
     - assets/cats/sleep.webp
     - assets/cats/sleep_still.png
+    - assets/cats/water_still.png
+    - assets/cats/water.webp
     - assets/cats/meditation_still.png
     - assets/cats/meditation.webp
     - assets/icon/
