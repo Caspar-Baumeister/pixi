@@ -41,6 +41,7 @@ flutter:
   assets:
     - assets/cats/idle/
     - assets/cats/stretch.webp
+    - assets/cats/neutral.webp
     - assets/cats/neutral_still.png
     - assets/cats/stretch_still.png
     - assets/cats/wave.webp
