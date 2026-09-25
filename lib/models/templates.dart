@@ -99,6 +99,7 @@ const List<MapTemplate> kTemplates = [
   ),
   MapTemplate(
     id: 'anxiety',
+    catId: 'anxiety',
     category: TemplateCategory.feelings,
     baseColor: BaseColors.indigo,
     levels: [

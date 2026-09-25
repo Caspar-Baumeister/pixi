@@ -58,6 +58,8 @@ flutter:
     - assets/cats/bell_still.png
     - assets/cats/sleep.webp
     - assets/cats/sleep_still.png
+    - assets/cats/anxiety_still.png
+    - assets/cats/anxiety.webp
     - assets/cats/reading_still.png
     - assets/cats/reading.webp
     - assets/cats/water_still.png
