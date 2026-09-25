@@ -215,6 +215,7 @@ const List<MapTemplate> kTemplates = [
   ),
   MapTemplate(
     id: 'meditation',
+    catId: 'meditation',
     category: TemplateCategory.habits,
     baseColor: BaseColors.teal,
     levels: [
