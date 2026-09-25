@@ -226,6 +226,7 @@ const List<MapTemplate> kTemplates = [
   ),
   MapTemplate(
     id: 'reading',
+    catId: 'reading',
     category: TemplateCategory.habits,
     baseColor: BaseColors.cocoa,
     levels: [
