@@ -64,6 +64,10 @@ flutter:
     - assets/cats/bell_still.png
     - assets/cats/sleep.webp
     - assets/cats/sleep_still.png
+    - assets/cats/alcohol_still.png
+    - assets/cats/alcohol.webp
+    - assets/cats/social_still.png
+    - assets/cats/social.webp
     - assets/cats/pain_still.png
     - assets/cats/pain.webp
     - assets/cats/screen_still.png

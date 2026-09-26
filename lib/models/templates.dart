@@ -111,6 +111,7 @@ const List<MapTemplate> kTemplates = [
   ),
   MapTemplate(
     id: 'social',
+    catId: 'social',
     category: TemplateCategory.feelings,
     baseColor: BaseColors.rose,
     levels: [
@@ -208,6 +209,7 @@ const List<MapTemplate> kTemplates = [
   ),
   MapTemplate(
     id: 'alcohol',
+    catId: 'alcohol',
     category: TemplateCategory.habits,
     baseColor: BaseColors.amber,
     levels: [
