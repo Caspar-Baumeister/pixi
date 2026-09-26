@@ -122,6 +122,7 @@ const List<MapTemplate> kTemplates = [
   ),
   MapTemplate(
     id: 'gratitude',
+    catId: 'gratitude',
     category: TemplateCategory.feelings,
     baseColor: BaseColors.amber,
     levels: [
