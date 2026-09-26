@@ -240,6 +240,7 @@ const List<MapTemplate> kTemplates = [
   ),
   MapTemplate(
     id: 'screen',
+    catId: 'screen',
     category: TemplateCategory.habits,
     baseColor: BaseColors.slate,
     levels: [
