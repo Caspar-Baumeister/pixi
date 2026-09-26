@@ -159,6 +159,7 @@ const List<MapTemplate> kTemplates = [
   ),
   MapTemplate(
     id: 'energy',
+    catId: 'energy',
     category: TemplateCategory.body,
     baseColor: BaseColors.peach,
     levels: [
