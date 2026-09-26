@@ -408,18 +408,6 @@ class _WheelPainter extends CustomPainter {
         ).createShader(Rect.fromCircle(center: c, radius: layout.rIn)),
     );
     canvas.drawCircle(c, layout.rIn, thin..strokeWidth = max(0.6, size.width / 480));
-
-    // tiny stars around the centre like the poster
-    final star = Paint()..color = ink.withValues(alpha: 0.7);
-    final rnd = _Rng(year);
-    for (var i = 0; i < 14; i++) {
-      final a = rnd.next() * 2 * pi;
-      final r = layout.rIn * (1.05 + rnd.next() * 0.25);
-      final p = Offset(c.dx + r * cos(a), c.dy + r * sin(a));
-      final s = dotR * (0.8 + rnd.next() * 1.4);
-      canvas.drawLine(p - Offset(s * 1.6, 0), p + Offset(s * 1.6, 0), star..strokeWidth = 0.7);
-      canvas.drawLine(p - Offset(0, s * 1.6), p + Offset(0, s * 1.6), star);
-    }
   }
 
   static Offset _centroid(List<Offset> poly) {
