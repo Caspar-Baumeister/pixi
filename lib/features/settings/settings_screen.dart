@@ -4,7 +4,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../core/links.dart';
@@ -14,6 +13,7 @@ import '../../core/theme.dart';
 import '../../data/providers.dart';
 import '../../services/notification_service.dart';
 import '../../services/premium_service.dart';
+import '../../services/share_service.dart';
 import '../../widgets/pixi_cat.dart';
 import '../../widgets/ui.dart';
 import '../feedback/feedback_sheet.dart';
@@ -68,13 +68,18 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     }
   }
 
-  Future<void> _export() async {
+  Future<void> _export(BuildContext origin) async {
+    final s = S.of(context);
     final data = ref.read(appProvider);
     final json = await ref.read(repositoryProvider).exportJson(data);
     final dir = await getTemporaryDirectory();
     final f = File('${dir.path}/pixi_export.json');
     await f.writeAsString(json);
-    await Share.shareXFiles([XFile(f.path, mimeType: 'application/json')]);
+    if (!origin.mounted) return;
+    final ok = await ShareService.shareFile(f.path, mimeType: 'application/json', origin: origin);
+    if (!ok && mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(s.t('share_failed'))));
+    }
   }
 
   @override
@@ -184,9 +189,29 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             children: [
               ListTile(
                 contentPadding: EdgeInsets.zero,
-                leading: const Icon(Icons.ios_share_rounded, color: PixiColors.ink),
-                title: Text(s.t('export'), style: PixiText.body1(color: PixiColors.ink)),
-                onTap: _export,
+                leading: const Icon(Icons.star_outline_rounded, color: PixiColors.ink),
+                title: Text(s.t('rate'), style: PixiText.body1(color: PixiColors.ink)),
+                onTap: () => launchUrl(Uri.parse(Links.writeReview), mode: LaunchMode.externalApplication),
+              ),
+              ListTile(
+                contentPadding: EdgeInsets.zero,
+                leading: const SizedBox(
+                  width: 24,
+                  child: Center(
+                    child: Text('𝕏', style: TextStyle(fontSize: 20, color: PixiColors.ink, fontWeight: FontWeight.w700)),
+                  ),
+                ),
+                title: Text(s.t('follow_x'), style: PixiText.body1(color: PixiColors.ink)),
+                subtitle: Text('@casparbuilds', style: PixiText.label(size: 12)),
+                onTap: () => launchUrl(Uri.parse(Links.x), mode: LaunchMode.externalApplication),
+              ),
+              Builder(
+                builder: (tileCtx) => ListTile(
+                  contentPadding: EdgeInsets.zero,
+                  leading: const Icon(Icons.ios_share_rounded, color: PixiColors.ink),
+                  title: Text(s.t('export'), style: PixiText.body1(color: PixiColors.ink)),
+                  onTap: () => _export(tileCtx),
+                ),
               ),
               ListTile(
                 contentPadding: EdgeInsets.zero,

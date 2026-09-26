@@ -22,9 +22,6 @@ class CircleScreen extends ConsumerStatefulWidget {
 class _CircleScreenState extends ConsumerState<CircleScreen> {
   final _shareKey = GlobalKey();
   bool _sharing = false;
-  /// While true the cat shows its poster frame so exports never catch it
-  /// mid-movement.
-  bool _capturing = false;
 
   @override
   Widget build(BuildContext context) {
@@ -64,7 +61,6 @@ class _CircleScreenState extends ConsumerState<CircleScreen> {
                             entries: entries,
                             year: year,
                             size: size,
-                            animateCat: !_capturing,
                             onTapDay: (d) => DaySheet.show(context, date: d, primaryMapId: map.id),
                           ),
                           const SizedBox(height: 14),
@@ -81,29 +77,26 @@ class _CircleScreenState extends ConsumerState<CircleScreen> {
           ),
           Padding(
             padding: const EdgeInsets.fromLTRB(24, 8, 24, 16),
-            child: PrimaryButton(
-              label: s.t('share'),
-              loading: _sharing,
-              onPressed: () async {
-                setState(() {
-                  _sharing = true;
-                  _capturing = true;
-                });
-                // Let the still frame land on screen before we snapshot it.
-                await WidgetsBinding.instance.endOfFrame;
-                await WidgetsBinding.instance.endOfFrame;
-                await ShareService.shareBoundary(
-                  _shareKey,
-                  fileName: 'pixi_circle_${s.r(map.title)}_$year.png',
-                  text: s.t('share_text'),
-                );
-                if (mounted) {
-                  setState(() {
-                    _sharing = false;
-                    _capturing = false;
-                  });
-                }
-              },
+            child: Builder(
+              builder: (btnCtx) => PrimaryButton(
+                label: s.t('share'),
+                loading: _sharing,
+                onPressed: () async {
+                  setState(() => _sharing = true);
+                  final ok = await ShareService.shareBoundary(
+                    _shareKey,
+                    fileName: 'pixi_circle_${s.r(map.title)}_$year.png',
+                    text: s.t('share_text'),
+                    origin: btnCtx,
+                  );
+                  if (!mounted) return;
+                  setState(() => _sharing = false);
+                  if (!ok) {
+                    ScaffoldMessenger.of(this.context)
+                        .showSnackBar(SnackBar(content: Text(s.t('share_failed'))));
+                  }
+                },
+              ),
             ),
           ),
         ],

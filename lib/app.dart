@@ -12,6 +12,7 @@ import 'features/onboarding/onboarding_screen.dart';
 import 'services/notification_service.dart';
 import 'services/premium_service.dart';
 import 'widgets/pixi_cat.dart';
+import 'widgets/splash.dart';
 
 final GlobalKey<NavigatorState> rootNavigatorKey = GlobalKey<NavigatorState>();
 
@@ -23,6 +24,9 @@ class PixiApp extends ConsumerStatefulWidget {
 }
 
 class _PixiAppState extends ConsumerState<PixiApp> {
+  /// Splash on every cold start (lies over the app, which builds underneath).
+  bool _splash = true;
+
   void _syncPremium() {
     final v = PremiumService.instance.pro.value;
     if (v == null || !PremiumService.instance.isConfigured) return;
@@ -71,7 +75,15 @@ class _PixiAppState extends ConsumerState<PixiApp> {
       locale: ref.watch(localeOverrideProvider),
       builder: (context, child) {
         PixiCat.precache(context);
-        final c = child ?? const SizedBox.shrink();
+        // Always a Stack, so the navigator below keeps its state when the
+        // splash goes away.
+        final c = Stack(
+          fit: StackFit.expand,
+          children: [
+            child ?? const SizedBox.shrink(),
+            if (_splash) Positioned.fill(child: PixiSplash(onDone: () => setState(() => _splash = false))),
+          ],
+        );
         return kScreenshotMode ? RepaintBoundary(key: shotBoundaryKey, child: c) : c;
       },
       home: AnimatedSwitcher(

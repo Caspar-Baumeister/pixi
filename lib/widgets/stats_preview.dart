@@ -9,6 +9,7 @@ import '../core/theme.dart';
 import '../models/pix_map.dart';
 import '../models/templates.dart';
 import 'links.dart';
+import 'patterns.dart';
 
 /// Example data for previews (paywall, onboarding): mood, sleep and
 /// training that really are related, so the links look like real ones.
@@ -59,8 +60,7 @@ class _PremiumStatsPreviewState extends State<PremiumStatsPreview> {
   Widget build(BuildContext context) {
     final s = S.of(context);
     final year = DateTime.now().year;
-    final st = computeStats(DemoTrio.mood, DemoTrio.moodData, year);
-    final maxV = max(1, DemoTrio.mood.levels.length - 1).toDouble();
+    final month = monthColors(DemoTrio.mood, DemoTrio.moodData, year, max(2, DateTime.now().month));
     final cards = <Widget>[
       _card(
         title: s.t('links_title'),
@@ -70,12 +70,12 @@ class _PremiumStatsPreviewState extends State<PremiumStatsPreview> {
       _card(
         title: s.t('pw_month_title'),
         why: s.t('pw_month_why'),
-        child: MiniBars(values: st.monthAverages, maxValue: maxV, labels: s.monthLetters, map: DemoTrio.mood),
+        child: MonthShiftCard(map: DemoTrio.mood, month: month, compact: true),
       ),
       _card(
         title: s.t('pw_week_title'),
         why: s.t('pw_week_why'),
-        child: MiniBars(values: st.weekdayAverages, maxValue: maxV, labels: s.weekdaysShort, map: DemoTrio.mood),
+        child: WeekdayCard(map: DemoTrio.mood, entries: DemoTrio.moodData, year: year, compact: true),
       ),
     ];
     return Column(
@@ -126,57 +126,18 @@ class _PremiumStatsPreviewState extends State<PremiumStatsPreview> {
         children: [
           Text(title, style: PixiText.title(size: 18)),
           const SizedBox(height: 8),
-          Expanded(child: Center(child: child)),
+          Expanded(
+            child: ClipRect(
+              child: SingleChildScrollView(
+                physics: const NeverScrollableScrollPhysics(),
+                child: Padding(padding: const EdgeInsets.only(top: 4), child: child),
+              ),
+            ),
+          ),
           const SizedBox(height: 8),
           Text(why, style: PixiText.label(size: 12, color: PixiColors.inkSoft), maxLines: 4, overflow: TextOverflow.ellipsis),
         ],
       ),
-    );
-  }
-}
-
-/// Compact bar chart coloured with the map's level colours.
-class MiniBars extends StatelessWidget {
-  const MiniBars({super.key, required this.values, required this.maxValue, required this.labels, required this.map, this.height = 90});
-  final List<double?> values;
-  final double maxValue;
-  final List<String> labels;
-  final PixMap map;
-  final double height;
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        SizedBox(
-          height: height,
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              for (var i = 0; i < values.length; i++)
-                Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 2.5),
-                    child: Container(
-                      height: values[i] == null ? 6 : 8 + (height - 10) * (values[i]! / maxValue),
-                      decoration: BoxDecoration(
-                        color: values[i] == null
-                            ? PixiColors.paperDark
-                            : map.levels[values[i]!.round().clamp(0, map.levels.length - 1)].color,
-                        borderRadius: const BorderRadius.vertical(top: Radius.circular(5)),
-                      ),
-                    ),
-                  ),
-                ),
-            ],
-          ),
-        ),
-        const SizedBox(height: 5),
-        Row(children: [
-          for (final l in labels) Expanded(child: Text(l, textAlign: TextAlign.center, style: PixiText.label(size: 10))),
-        ]),
-      ],
     );
   }
 }

@@ -324,3 +324,66 @@ class ThinProgress extends StatelessWidget {
     );
   }
 }
+
+/// Small close button for paywalls: first a ring that fills up for [delay],
+/// then a little X. Keeps the choice honest without a big "later" button.
+class DelayedCloseButton extends StatefulWidget {
+  const DelayedCloseButton({super.key, required this.onTap, this.delay = const Duration(seconds: 4)});
+  final VoidCallback? onTap;
+  final Duration delay;
+
+  @override
+  State<DelayedCloseButton> createState() => _DelayedCloseButtonState();
+}
+
+class _DelayedCloseButtonState extends State<DelayedCloseButton> with SingleTickerProviderStateMixin {
+  late final AnimationController _c = AnimationController(vsync: this, duration: widget.delay)..forward();
+
+  @override
+  void dispose() {
+    _c.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: 36,
+      height: 36,
+      child: AnimatedBuilder(
+        animation: _c,
+        builder: (context, _) {
+          final done = _c.isCompleted;
+          return AnimatedSwitcher(
+            duration: const Duration(milliseconds: 250),
+            child: done
+                ? Material(
+                    key: const ValueKey('x'),
+                    color: PixiColors.paperDark,
+                    shape: const CircleBorder(),
+                    child: InkWell(
+                      customBorder: const CircleBorder(),
+                      onTap: widget.onTap,
+                      child: const SizedBox(
+                        width: 36,
+                        height: 36,
+                        child: Icon(Icons.close_rounded, size: 18, color: PixiColors.inkSoft),
+                      ),
+                    ),
+                  )
+                : Padding(
+                    key: const ValueKey('ring'),
+                    padding: const EdgeInsets.all(9),
+                    child: CircularProgressIndicator(
+                      value: _c.value,
+                      strokeWidth: 2,
+                      color: PixiColors.faint,
+                      backgroundColor: PixiColors.line,
+                    ),
+                  ),
+          );
+        },
+      ),
+    );
+  }
+}

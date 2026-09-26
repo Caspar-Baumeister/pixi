@@ -13,7 +13,6 @@ import '../../widgets/pixi_cat.dart';
 import '../../widgets/ui.dart';
 import '../checkin/checkin_screen.dart';
 import '../circle/circle_screen.dart';
-import '../feedback/feedback_sheet.dart';
 import '../maps/maps_screen.dart';
 import '../maps/templates_screen.dart';
 import '../settings/settings_screen.dart';
@@ -36,23 +35,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   void initState() {
     super.initState();
     _pager = PageController(initialPage: ref.read(selectedMapIndexProvider));
-    WidgetsBinding.instance.addPostFrameCallback((_) => _maybeAskFeedback());
   }
 
   @override
   void dispose() {
     _pager.dispose();
     super.dispose();
-  }
-
-  void _maybeAskFeedback() {
-    final data = ref.read(appProvider);
-    if (data.maps.isNotEmpty && !data.settings.feedbackAfterMapShown) {
-      ref.read(appProvider.notifier).updateSettings((s) => s.copyWith(feedbackAfterMapShown: true));
-      Future<void>.delayed(const Duration(milliseconds: 900), () {
-        if (mounted) FeedbackSheet.show(context, kind: FeedbackKind.firstMap);
-      });
-    }
   }
 
   void _jump(int index, int count) {
@@ -203,13 +191,22 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                           ),
                         ),
                         const SizedBox(width: 8),
-                        _RoundAction(
-                          icon: Icons.ios_share_rounded,
-                          tooltip: s.t('share'),
-                          onTap: () => ShareService.shareBoundary(
-                            _keyFor(current.id),
-                            fileName: 'pixi_${s.r(current.title)}_$year.png',
-                            text: s.t('share_text'),
+                        Builder(
+                          builder: (btnCtx) => _RoundAction(
+                            icon: Icons.ios_share_rounded,
+                            tooltip: s.t('share'),
+                            onTap: () async {
+                              final ok = await ShareService.shareBoundary(
+                                _keyFor(current.id),
+                                fileName: 'pixi_${s.r(current.title)}_$year.png',
+                                text: s.t('share_text'),
+                                origin: btnCtx,
+                              );
+                              if (!ok && context.mounted) {
+                                ScaffoldMessenger.of(context)
+                                    .showSnackBar(SnackBar(content: Text(s.t('share_failed'))));
+                              }
+                            },
                           ),
                         ),
                       ],

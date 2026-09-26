@@ -34,6 +34,9 @@ class CatAnim {
   final List<int> ms;
 
   String frame(int n) => 'assets/cats/$id/${n.toString().padLeft(2, '0')}.png';
+
+  /// Still frame cropped and centred so it fits inside a circle (wheel centre).
+  String get badge => 'assets/cats/badges/$id.png';
 }
 
 class CatAnims {

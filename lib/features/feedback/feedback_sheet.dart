@@ -4,16 +4,17 @@ import 'package:url_launcher/url_launcher.dart';
 import '../../core/links.dart';
 import '../../core/strings.dart';
 import '../../core/theme.dart';
+import '../../services/review_service.dart';
 import '../../widgets/pixi_cat.dart';
 import '../../widgets/ui.dart';
 
 /// Where feedback mails go.
 const String kFeedbackEmail = Links.supportEmail;
 
-enum FeedbackKind { firstMap, firstCheckin }
+enum FeedbackKind { streak }
 
-/// Small, friendly feedback prompt shown once after the first map and once
-/// after the first check-in.
+/// Small, friendly feedback prompt, shown once after the first 3-day streak.
+/// "Gut" leads to Apple's rating sheet, anything else to a short mail.
 class FeedbackSheet extends StatefulWidget {
   const FeedbackSheet({super.key, required this.kind});
   final FeedbackKind kind;
@@ -58,7 +59,6 @@ class _FeedbackSheetState extends State<FeedbackSheet> {
   @override
   Widget build(BuildContext context) {
     final s = S.of(context);
-    final first = widget.kind == FeedbackKind.firstMap;
     return Padding(
       padding: EdgeInsets.fromLTRB(24, 16, 24, 24 + MediaQuery.of(context).viewInsets.bottom),
       child: Column(
@@ -71,13 +71,13 @@ class _FeedbackSheetState extends State<FeedbackSheet> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(first ? s.t('fb_map_title') : s.t('fb_checkin_title'), style: PixiText.title(size: 22)),
+                    Text(s.t('fb_streak_title'), style: PixiText.title(size: 22)),
                     const SizedBox(height: 4),
-                    Text(first ? s.t('fb_map_sub') : s.t('fb_checkin_sub'), style: PixiText.body1(color: PixiColors.muted)),
+                    Text(s.t('fb_streak_sub'), style: PixiText.body1(color: PixiColors.muted)),
                   ],
                 ),
               ),
-              const PixiCat(size: 84),
+              const PixiCat(size: 84, catId: 'happy'),
             ],
           ),
           const SizedBox(height: 18),
@@ -121,12 +121,13 @@ class _FeedbackSheetState extends State<FeedbackSheet> {
           ),
           const SizedBox(height: 16),
           PrimaryButton(
-            label: _rating == 2 ? s.t('fb_thanks') : s.t('fb_send'),
+            label: _rating == 2 ? s.t('rate') : s.t('fb_send'),
             onPressed: _rating == null
                 ? null
                 : () {
                     if (_rating == 2) {
                       Navigator.of(context).pop();
+                      ReviewService.ask();
                     } else {
                       _send();
                     }

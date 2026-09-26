@@ -113,6 +113,7 @@ class Settings {
     this.feedbackAfterCheckinShown = false,
     this.lastCheckinDate = '',
     this.checkinCount = 0,
+    this.reviewAfterStreakShown = false,
   });
 
   final String name;
@@ -126,6 +127,9 @@ class Settings {
   final String lastCheckinDate;
   final int checkinCount;
 
+  /// The "how do you like Pixi" prompt after the first 3-day streak.
+  final bool reviewAfterStreakShown;
+
   Settings copyWith({
     String? name,
     int? reminderHour,
@@ -137,6 +141,7 @@ class Settings {
     bool? feedbackAfterCheckinShown,
     String? lastCheckinDate,
     int? checkinCount,
+    bool? reviewAfterStreakShown,
   }) =>
       Settings(
         name: name ?? this.name,
@@ -151,6 +156,7 @@ class Settings {
             feedbackAfterCheckinShown ?? this.feedbackAfterCheckinShown,
         lastCheckinDate: lastCheckinDate ?? this.lastCheckinDate,
         checkinCount: checkinCount ?? this.checkinCount,
+        reviewAfterStreakShown: reviewAfterStreakShown ?? this.reviewAfterStreakShown,
       );
 
   Map<String, dynamic> toJson() => {
@@ -164,6 +170,7 @@ class Settings {
         'feedbackAfterCheckinShown': feedbackAfterCheckinShown,
         'lastCheckinDate': lastCheckinDate,
         'checkinCount': checkinCount,
+        'reviewAfterStreakShown': reviewAfterStreakShown,
       };
 
   factory Settings.fromJson(Map<String, dynamic> j) => Settings(
@@ -178,6 +185,7 @@ class Settings {
             (j['feedbackAfterCheckinShown'] as bool?) ?? false,
         lastCheckinDate: (j['lastCheckinDate'] as String?) ?? '',
         checkinCount: (j['checkinCount'] as int?) ?? 0,
+        reviewAfterStreakShown: (j['reviewAfterStreakShown'] as bool?) ?? false,
       );
 }
 

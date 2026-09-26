@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:purchases_flutter/purchases_flutter.dart';
 
 import '../../core/dates.dart';
+import '../../core/stats.dart';
 import '../../core/demo_data.dart';
 import '../../core/strings.dart';
 import '../../core/theme.dart';
@@ -14,14 +15,17 @@ import '../../models/pix_map.dart';
 import '../../models/templates.dart';
 import '../../services/notification_service.dart';
 import '../../services/premium_service.dart';
+import '../../services/review_service.dart';
 import '../premium/paywall_screen.dart';
 import '../../widgets/circle_year.dart';
+import '../../widgets/hero_ring.dart';
 import '../../widgets/links.dart';
+import '../../widgets/patterns.dart';
 import '../../widgets/pixel_grid.dart';
 import '../../widgets/pixi_cat.dart';
 import '../../widgets/ui.dart';
 
-enum _Step { hi, name, pick, how, time, circle, stats, corr, plan, go }
+enum _Step { hi, name, pick, how, time, circle, stats, corr, support, plan, go }
 
 /// Long, personal onboarding (structure modelled on Amy): progress bar,
 /// sketched cat, one question per screen, full-width CTA.
@@ -37,11 +41,16 @@ class OnboardingScreen extends ConsumerStatefulWidget {
 
 class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
   _Step _step = _Step.hi;
-  final _heroColor = ValueNotifier<Color>(templateById('mood').baseColor);
   bool _forward = true;
 
   final _name = TextEditingController();
-  static const _carouselIds = ['mood', 'dreams', 'training'];
+  static const _carouselIds = ['mood', 'dreams', 'training', 'sleep', 'energy'];
+
+  /// Colour sets the start ring glides through: purple, night, green …
+  static final _ringSets = [
+    for (final id in ['mood', 'sleep', 'training', 'energy', 'cry', 'social', 'meditation', 'dreams', 'gratitude', 'period'])
+      templateById(id),
+  ];
   static const _extraIds = ['mood', 'dreams', 'training', 'sleep', 'cry'];
 
   String _pickedTemplate = 'mood';
@@ -54,7 +63,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
 
   // soft paywall
   List<Package>? _packages;
-  PackageType _plan = PackageType.lifetime;
+  PackageType _plan = PackageType.monthly;
 
   @override
   void initState() {
@@ -74,7 +83,6 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
   @override
   void dispose() {
     _name.dispose();
-    _heroColor.dispose();
     super.dispose();
   }
 
@@ -112,6 +120,9 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
         break;
       case _Step.corr:
         _loadPackages();
+        _go(_Step.support);
+        break;
+      case _Step.support:
         _go(_Step.plan);
         break;
       case _Step.plan:
@@ -190,6 +201,12 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
     _next();
   }
 
+  Future<void> _rateAndContinue() async {
+    await ReviewService.ask();
+    await Future<void>.delayed(const Duration(milliseconds: 700));
+    if (mounted && _step == _Step.support) _next();
+  }
+
   Future<void> _askReminder() async {
     setState(() => _busy = true);
     final ok = await NotificationService.instance.requestPermission();
@@ -212,13 +229,20 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
       backgroundColor: PixiColors.paper,
       body: Stack(
         children: [
-          if (_step == _Step.hi)
-            ValueListenableBuilder<Color>(
-              valueListenable: _heroColor,
-              builder: (_, c, __) => PageGlow(color: c),
-            )
-          else
-            PageGlow(color: accent),
+          PageGlow(color: accent),
+          // The big turning pixel ring of the first screen, with Pixi inside.
+          Positioned.fill(
+            child: AnimatedSwitcher(
+              duration: const Duration(milliseconds: 450),
+              child: _step == _Step.hi
+                  ? HeroRing(
+                      key: const ValueKey('ring'),
+                      templates: _ringSets,
+                      child: _heroContent(s),
+                    )
+                  : const SizedBox.shrink(key: ValueKey('none')),
+            ),
+          ),
           SafeArea(
             child: Column(
               children: [
@@ -232,6 +256,13 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                       ),
                       const SizedBox(width: 14),
                       Expanded(child: ThinProgress(value: (_index + 1) / _total)),
+                      if (_step == _Step.plan) ...[
+                        const SizedBox(width: 14),
+                        DelayedCloseButton(
+                          key: const ValueKey('plan-close'),
+                          onTap: _busy ? null : _next,
+                        ),
+                      ],
                     ],
                   ),
                 ),
@@ -275,7 +306,18 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
   Widget _buildButtons(S s) {
     switch (_step) {
       case _Step.hi:
-        return PrimaryButton(label: s.t('ob_start'), onPressed: _next);
+        return DecoratedBox(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(99),
+            boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.12), blurRadius: 24, offset: const Offset(0, 6))],
+          ),
+          child: PrimaryButton(
+            label: s.t('ob_start'),
+            color: Colors.white,
+            textColor: PixiColors.ink,
+            onPressed: _next,
+          ),
+        );
       case _Step.name:
         return Column(
           mainAxisSize: MainAxisSize.min,
@@ -304,14 +346,20 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
             ),
           ],
         );
-      case _Step.plan:
+      case _Step.support:
         return Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            PrimaryButton(label: s.t('ob_plan_cta'), loading: _busy, onPressed: _buyPlan),
+            PrimaryButton(label: s.t('ob_support_rate'), onPressed: _rateAndContinue),
             const SizedBox(height: 4),
-            SecondaryButton(label: s.t('ob_plan_later'), onPressed: _busy ? null : _next),
+            SecondaryButton(label: s.t('ob_support_skip'), onPressed: _next),
           ],
+        );
+      case _Step.plan:
+        return PrimaryButton(
+          label: PlanPicker.ctaLabel(s, _packages, _plan),
+          loading: _busy,
+          onPressed: _buyPlan,
         );
       case _Step.go:
         return PrimaryButton(
@@ -335,8 +383,10 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
         if (illustration != null) Center(child: illustration),
         const SizedBox(height: 8),
         Text(title, style: PixiText.title(size: 28)),
-        const SizedBox(height: 8),
-        Text(subtitle, style: PixiText.body1(size: 16, color: PixiColors.muted)),
+        if (subtitle.isNotEmpty) ...[
+          const SizedBox(height: 8),
+          Text(subtitle, style: PixiText.body1(size: 16, color: PixiColors.muted)),
+        ],
       ],
     );
   }
@@ -349,20 +399,8 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
   Widget _buildStep(BuildContext context, S s, Color accent) {
     switch (_step) {
       case _Step.hi:
-        return _scroll([
-          const SizedBox(height: 16),
-          _header(
-            s,
-            title: s.t('ob_hi_title'),
-            subtitle: s.t('ob_hi_sub'),
-            illustration: HeroWheel(
-              templates: kTemplates,
-              size: 300,
-              catId: 'wave',
-              colorNotifier: _heroColor,
-            ),
-          ),
-        ]);
+        // Everything lives inside the ring (see build).
+        return const SizedBox.shrink();
 
       case _Step.name:
         return _scroll([
@@ -491,6 +529,14 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                 showNumbers: size >= 300,
               ),
             ),
+            const SizedBox(height: 12),
+            // What this wheel shows: the map and its colours.
+            Center(
+              child: Text('${s.r(map.title)} · ${s.r(map.question)}',
+                  textAlign: TextAlign.center, style: PixiText.title(size: 16)),
+            ),
+            const SizedBox(height: 8),
+            Center(child: MapLegend(map: map, compact: true)),
           ]);
         });
 
@@ -505,7 +551,19 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
             illustration: GlowingCat(color: map.baseColor, size: 120, anim: CatAnims.forMap(map)),
           ),
           const SizedBox(height: 18),
-          _StatsPreview(map: map, entries: demo),
+          MonthShiftCard(map: map, month: _demoMonth(map, demo)),
+          const SizedBox(height: 12),
+          PaperCard(
+            glowColor: map.baseColor,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(s.t('pat_week_title'), style: PixiText.label()),
+                const SizedBox(height: 12),
+                WeekdayCard(map: map, entries: demo, year: DateTime.now().year, compact: true),
+              ],
+            ),
+          ),
         ]);
 
       case _Step.corr:
@@ -555,9 +613,18 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
           ),
         ]);
 
+      case _Step.support:
+        return _scroll([
+          const SizedBox(height: 8),
+          _header(
+            s,
+            title: s.t('ob_support_title'),
+            subtitle: s.t('ob_support_sub'),
+            illustration: GlowingCat(color: accent, size: 190, catId: 'gratitude'),
+          ),
+        ]);
+
       case _Step.plan:
-        final life = _pkg(PackageType.lifetime);
-        final yearly = _pkg(PackageType.annual);
         return _scroll([
           const SizedBox(height: 8),
           _header(
@@ -567,24 +634,11 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
             illustration: GlowingCat(color: accent, size: 130, catId: 'happy'),
           ),
           const SizedBox(height: 18),
-          PlanTile(
-            title: s.t('plan_life'),
-            price: life?.storeProduct.priceString ?? s.t('plan_life_price'),
-            sub: s.t('plan_life_sub'),
-            selected: _plan == PackageType.lifetime,
-            onTap: () => setState(() => _plan = PackageType.lifetime),
-            badge: s.isDe ? 'Beliebt' : 'Popular',
+          PlanPicker(
+            packages: _packages,
+            selected: _plan,
+            onSelect: (p) => setState(() => _plan = p),
           ),
-          const SizedBox(height: 10),
-          PlanTile(
-            title: s.t('plan_year'),
-            price: yearly?.storeProduct.priceString ?? s.t('plan_year_price'),
-            sub: s.t('plan_year_sub'),
-            selected: _plan == PackageType.annual,
-            onTap: () => setState(() => _plan = PackageType.annual),
-          ),
-          const SizedBox(height: 12),
-          Text(s.t('sub_disclosure'), style: PixiText.label(size: 11), textAlign: TextAlign.center),
         ]);
 
       case _Step.go:
@@ -593,12 +647,35 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
           _header(
             s,
             title: s.withName('ob_go_title', _name.text),
-            subtitle: s.t('ob_go_sub'),
+            // Only promise the morning message when the reminder is really on.
+            subtitle: _reminderOn == true ? s.t('ob_go_sub') : '',
             illustration: GlowingCat(color: accent, size: 200, catId: 'happy'),
           ),
         ]);
     }
   }
+
+  /// Cat, title and line inside the start ring.
+  Widget _heroContent(S s) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 34),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const PixiCat(size: 190, catId: 'wave'),
+          const SizedBox(height: 10),
+          Text(s.t('ob_hi_title'), textAlign: TextAlign.center, style: PixiText.title(size: 30)),
+          const SizedBox(height: 8),
+          Text(s.t('ob_hi_sub'), textAlign: TextAlign.center, style: PixiText.body1(size: 15, color: PixiColors.muted)),
+        ],
+      ),
+    );
+  }
+
+  /// The demo year's current month (February at the earliest, so there is
+  /// always a month before it to compare with).
+  MonthColors _demoMonth(PixMap map, Map<String, int> demo) =>
+      monthColors(map, demo, DateTime.now().year, max(2, DateTime.now().month));
 
   Widget _miniCard(S s, PixMap map, Map<String, int> entries, int year) {
     return Container(
@@ -748,7 +825,13 @@ class _PickStepState extends State<_PickStep> {
                     scale: scale,
                     child: Opacity(
                       opacity: 1 - dist * 0.35,
-                      child: SizedBox(
+                      // Maps with many levels have a taller legend: shrink
+                      // the card a little instead of overflowing.
+                      child: ConstrainedBox(
+                        constraints: BoxConstraints(maxHeight: c.maxHeight - 6),
+                        child: FittedBox(
+                          fit: BoxFit.scaleDown,
+                          child: SizedBox(
                         width: cardW,
                         child: MapCard(
                           map: map,
@@ -759,6 +842,8 @@ class _PickStepState extends State<_PickStep> {
                           selected: selected,
                           onTap: () => _ctrl?.animateToPage(i,
                               duration: const Duration(milliseconds: 320), curve: Curves.easeOutCubic),
+                        ),
+                          ),
                         ),
                       ),
                     ),
@@ -794,77 +879,6 @@ class _PickStepState extends State<_PickStep> {
 }
 
 // ---------------------------------------------------------------------------
-
-class _StatsPreview extends StatelessWidget {
-  const _StatsPreview({required this.map, required this.entries});
-  final PixMap map;
-  final Map<String, int> entries;
-
-  @override
-  Widget build(BuildContext context) {
-    final s = S.of(context);
-    final year = DateTime.now().year;
-    final sums = List<double>.filled(12, 0);
-    final ns = List<int>.filled(12, 0);
-    entries.forEach((k, v) {
-      if (!k.startsWith('$year-')) return;
-      final m = int.parse(k.substring(5, 7)) - 1;
-      sums[m] += v;
-      ns[m]++;
-    });
-    final avgs = List.generate(12, (i) => ns[i] == 0 ? 0.0 : sums[i] / ns[i]);
-    var best = 0;
-    for (var i = 1; i < 12; i++) {
-      if (avgs[i] > avgs[best]) best = i;
-    }
-    final maxLvl = max(1, map.levels.length - 1);
-    return PaperCard(
-      glowColor: map.baseColor,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(s.t('best_month'), style: PixiText.label()),
-          const SizedBox(height: 4),
-          Text('${s.monthsLong[best]} · Ø ${avgs[best].toStringAsFixed(1).replaceAll('.', s.isDe ? ',' : '.')}',
-              style: PixiText.title(size: 22)),
-          const SizedBox(height: 16),
-          SizedBox(
-            height: 90,
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                for (var i = 0; i < 12; i++)
-                  Expanded(
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 2.5),
-                      child: Container(
-                        height: 8 + 82 * (avgs[i] / maxLvl),
-                        decoration: BoxDecoration(
-                          color: map.levels[(avgs[i]).round().clamp(0, map.levels.length - 1)].color,
-                          borderRadius: const BorderRadius.vertical(top: Radius.circular(5)),
-                          boxShadow: [
-                            BoxShadow(color: map.baseColor.withValues(alpha: 0.25), blurRadius: 10),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-              ],
-            ),
-          ),
-          const SizedBox(height: 6),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(s.monthsShort[0], style: PixiText.label(size: 11)),
-              Text(s.monthsShort[11], style: PixiText.label(size: 11)),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-}
 
 class _TemplateChip extends StatelessWidget {
   const _TemplateChip({required this.template, required this.added, required this.onTap});

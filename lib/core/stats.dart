@@ -205,6 +205,88 @@ class MonthColors {
   }
 }
 
+/// One colour that showed up more or less often than in the month before.
+class ColorShift {
+  const ColorShift(this.level, this.delta);
+  final int level;
+
+  /// Days this month minus days last month (never 0).
+  final int delta;
+}
+
+/// Changes against last month, biggest first. Only colours that moved.
+List<ColorShift> monthShifts(MonthColors m) {
+  final out = <ColorShift>[
+    for (var i = 0; i < m.counts.length; i++)
+      if (m.delta(i) != 0) ColorShift(i, m.delta(i)),
+  ];
+  out.sort((a, b) => b.delta.abs().compareTo(a.delta.abs()));
+  return out;
+}
+
+/// The colour that stands out on one weekday: it shows up there clearly more
+/// often than on the other days.
+class WeekdayStandout {
+  const WeekdayStandout({required this.weekday, required this.level, required this.lift});
+
+  /// 0 = Monday … 6 = Sunday.
+  final int weekday;
+  final int level;
+
+  /// How much more often than overall (1.0 = same). Used for ranking only.
+  final double lift;
+}
+
+/// For every weekday the most over-represented colour of [year], or null when
+/// nothing stands out. Never an average: it is always a real colour.
+List<WeekdayStandout?> weekdayStandouts(
+  PixMap map,
+  Map<String, int> entries,
+  int year, {
+  int minCount = 3,
+  double minLift = 1.2,
+}) {
+  final levels = map.levels.length;
+  final perDay = List.generate(7, (_) => List<int>.filled(levels, 0));
+  final dayN = List<int>.filled(7, 0);
+  final total = List<int>.filled(levels, 0);
+  var n = 0;
+  entries.forEach((k, v) {
+    if (!k.startsWith('$year-')) return;
+    final d = Dates.parse(k);
+    final lvl = v.clamp(0, levels - 1);
+    perDay[d.weekday - 1][lvl]++;
+    dayN[d.weekday - 1]++;
+    total[lvl]++;
+    n++;
+  });
+  return List.generate(7, (wd) {
+    if (dayN[wd] < minCount || n == 0) return null;
+    WeekdayStandout? best;
+    for (var l = 0; l < levels; l++) {
+      final c = perDay[wd][l];
+      if (c < minCount || total[l] == 0) continue;
+      final lift = (c / dayN[wd]) / (total[l] / n);
+      if (lift < minLift) continue;
+      if (best == null || lift > best.lift) best = WeekdayStandout(weekday: wd, level: l, lift: lift);
+    }
+    return best;
+  });
+}
+
+/// How the whole year splits into colours (share 0..1 per level).
+List<double> yearShares(PixMap map, Map<String, int> entries, int year) {
+  final levels = map.levels.length;
+  final c = List<int>.filled(levels, 0);
+  var n = 0;
+  entries.forEach((k, v) {
+    if (!k.startsWith('$year-')) return;
+    c[v.clamp(0, levels - 1)]++;
+    n++;
+  });
+  return [for (final x in c) n == 0 ? 0.0 : x / n];
+}
+
 MonthColors monthColors(PixMap map, Map<String, int> entries, int year, int month) {
   final levels = map.levels.length;
   final now = List<int>.filled(levels, 0);

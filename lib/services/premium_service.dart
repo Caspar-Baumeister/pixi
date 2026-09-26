@@ -3,14 +3,15 @@ import 'package:flutter/services.dart';
 import 'package:purchases_flutter/purchases_flutter.dart';
 
 /// RevenueCat wrapper. One entitlement ("premium") unlocks unlimited maps and
-/// statistics; it is granted by either the yearly subscription or the
-/// lifetime purchase.
+/// statistics; it is granted by the monthly subscription (3-day free trial)
+/// or the lifetime purchase.
 ///
 /// RevenueCat dashboard (project "Pixi"):
 ///   Entitlement : premium
-///   Products    : pixi_premium_yearly   (auto-renewable, 1 year)
+///   Products    : pixi_premium_monthly  (auto-renewable, 1 month, 3-day trial)
 ///                 pixi_premium_lifetime (non-consumable)
-///   Offering    : default, packages $rc_annual + $rc_lifetime
+///                 pixi_premium_yearly   (legacy, no longer offered)
+///   Offering    : default, packages $rc_monthly + $rc_lifetime
 class PremiumService {
   PremiumService._();
   static final PremiumService instance = PremiumService._();
@@ -23,6 +24,7 @@ class PremiumService {
   );
 
   static const entitlementId = 'premium';
+  static const monthlyId = 'pixi_premium_monthly';
   static const yearlyId = 'pixi_premium_yearly';
   static const lifetimeId = 'pixi_premium_lifetime';
 
@@ -54,7 +56,7 @@ class PremiumService {
     _pro.value = info.entitlements.active.containsKey(entitlementId);
   }
 
-  /// Current offering's packages: lifetime first, then yearly.
+  /// Current offering's packages: monthly first, then lifetime.
   Future<List<Package>> packages() async {
     if (!isConfigured) return const [];
     try {
@@ -71,10 +73,18 @@ class PremiumService {
   }
 
   int _rank(Package p) => switch (p.packageType) {
-        PackageType.lifetime => 0,
-        PackageType.annual => 1,
-        _ => 2,
+        PackageType.monthly => 0,
+        PackageType.lifetime => 1,
+        PackageType.annual => 2,
+        _ => 3,
       };
+
+  /// "3 Tage" style free trial of a package, null when there is none.
+  static IntroductoryPrice? freeTrial(Package? p) {
+    final intro = p?.storeProduct.introductoryPrice;
+    if (intro == null || intro.price > 0) return null;
+    return intro;
+  }
 
   /// True when the entitlement is active afterwards. A cancelled sheet is false.
   Future<bool> purchase(Package package) async {

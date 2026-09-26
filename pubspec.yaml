@@ -20,6 +20,7 @@ dependencies:
   flutter_timezone: ^3.0.1
   url_launcher: ^6.3.1
   purchases_flutter: ^9.0.0
+  in_app_review: ^2.0.10
 
 dev_dependencies:
   flutter_test:
@@ -37,9 +38,14 @@ flutter_launcher_icons:
 
 flutter:
   uses-material-design: true
+  # RevenueCat's Swift package does not compile with the current Xcode;
+  # the CocoaPods build of the same version does. Stay on CocoaPods.
+  config:
+    enable-swift-package-manager: false
 
   assets:
     - assets/cats/idle/
+    - assets/cats/badges/
     - assets/cats/stretch.webp
     - assets/cats/neutral.webp
     - assets/cats/neutral_still.png

@@ -16,7 +16,7 @@ import '../../widgets/ui.dart';
 
 enum PaywallReason { maps, stats, settings }
 
-/// Two plans (lifetime + yearly), no monthly subscription. Prices come from
+/// Two plans: monthly with a 3-day free trial, or pay once. Prices come from
 /// the store via RevenueCat; static strings are only a fallback.
 class PaywallScreen extends ConsumerStatefulWidget {
   const PaywallScreen({super.key, this.reason = PaywallReason.settings});
@@ -28,7 +28,7 @@ class PaywallScreen extends ConsumerStatefulWidget {
 
 class _PaywallScreenState extends ConsumerState<PaywallScreen> {
   List<Package>? _packages;
-  PackageType _selected = PackageType.lifetime;
+  PackageType _selected = PackageType.monthly;
   bool _busy = false;
 
   @override
@@ -80,8 +80,6 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
   Widget build(BuildContext context) {
     final s = S.of(context);
     const accent = BaseColors.violet;
-    final life = _pkg(PackageType.lifetime);
-    final year = _pkg(PackageType.annual);
     return Scaffold(
       backgroundColor: PixiColors.paper,
       body: Stack(
@@ -120,24 +118,11 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
                       _Feature(icon: Icons.insights_rounded, text: s.t('feat_stats')),
                       _Feature(icon: Icons.pets_rounded, text: s.t('feat_support')),
                       const SizedBox(height: 22),
-                      PlanTile(
-                        title: s.t('plan_life'),
-                        price: life?.storeProduct.priceString ?? s.t('plan_life_price'),
-                        sub: s.t('plan_life_sub'),
-                        selected: _selected == PackageType.lifetime,
-                        onTap: () => setState(() => _selected = PackageType.lifetime),
-                        badge: s.isDe ? 'Beliebt' : 'Popular',
+                      PlanPicker(
+                        packages: _packages,
+                        selected: _selected,
+                        onSelect: (p) => setState(() => _selected = p),
                       ),
-                      const SizedBox(height: 10),
-                      PlanTile(
-                        title: s.t('plan_year'),
-                        price: year?.storeProduct.priceString ?? s.t('plan_year_price'),
-                        sub: s.t('plan_year_sub'),
-                        selected: _selected == PackageType.annual,
-                        onTap: () => setState(() => _selected = PackageType.annual),
-                      ),
-                      const SizedBox(height: 14),
-                      Text(s.t('sub_disclosure'), style: PixiText.label(size: 11), textAlign: TextAlign.center),
                       const SizedBox(height: 6),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
@@ -161,7 +146,7 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      PrimaryButton(label: s.t('buy'), loading: _busy, onPressed: _buy),
+                      PrimaryButton(label: PlanPicker.ctaLabel(s, _packages, _selected), loading: _busy, onPressed: _buy),
                       SecondaryButton(label: s.t('restore'), onPressed: _busy ? null : _restore),
                     ],
                   ),
@@ -200,8 +185,68 @@ class _Feature extends StatelessWidget {
   }
 }
 
-/// One selectable plan row (lifetime / yearly). Also used by the onboarding
-/// soft paywall.
+/// Monthly (with free trial) and lifetime, plus the subscription terms.
+/// Used by the paywall and the onboarding.
+class PlanPicker extends StatelessWidget {
+  const PlanPicker({super.key, required this.packages, required this.selected, required this.onSelect});
+  final List<Package>? packages;
+  final PackageType selected;
+  final ValueChanged<PackageType> onSelect;
+
+  static Package? _find(List<Package>? list, PackageType t) =>
+      list?.where((p) => p.packageType == t).firstOrNull;
+
+  /// Until the store answers we assume the trial exists (it is configured).
+  static bool _hasTrial(List<Package>? list) {
+    final m = _find(list, PackageType.monthly);
+    return m == null || PremiumService.freeTrial(m) != null;
+  }
+
+  static String monthlyPrice(S s, List<Package>? list) =>
+      _find(list, PackageType.monthly)?.storeProduct.priceString ?? s.t('plan_month_price');
+
+  /// "Kostenlos testen" for the monthly plan, "Für immer freischalten" for lifetime.
+  static String ctaLabel(S s, List<Package>? list, PackageType selected) {
+    if (selected == PackageType.lifetime) return s.t('cta_life');
+    return _hasTrial(list) ? s.t('cta_trial') : s.t('buy');
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final s = S.of(context);
+    final life = _find(packages, PackageType.lifetime);
+    final trial = _hasTrial(packages);
+    final price = monthlyPrice(s, packages);
+    return Column(
+      children: [
+        PlanTile(
+          title: s.t('plan_month'),
+          price: price,
+          sub: (trial ? s.t('plan_month_sub') : s.t('plan_month_sub_notrial')).replaceAll('{price}', price),
+          selected: selected == PackageType.monthly,
+          onTap: () => onSelect(PackageType.monthly),
+          badge: trial ? s.t('plan_trial_badge') : null,
+        ),
+        const SizedBox(height: 10),
+        PlanTile(
+          title: s.t('plan_life'),
+          price: life?.storeProduct.priceString ?? s.t('plan_life_price'),
+          sub: s.t('plan_life_sub'),
+          selected: selected == PackageType.lifetime,
+          onTap: () => onSelect(PackageType.lifetime),
+        ),
+        const SizedBox(height: 12),
+        Text(
+          s.t('sub_disclosure').replaceAll('{price}', price),
+          style: PixiText.label(size: 11),
+          textAlign: TextAlign.center,
+        ),
+      ],
+    );
+  }
+}
+
+/// One selectable plan row.
 class PlanTile extends StatelessWidget {
   const PlanTile({
     super.key,

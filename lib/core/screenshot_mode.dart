@@ -19,6 +19,7 @@ import '../features/maps/templates_screen.dart';
 import '../features/onboarding/onboarding_screen.dart';
 import '../features/premium/paywall_screen.dart';
 import '../features/stats/stats_screen.dart';
+import '../widgets/splash.dart';
 
 /// Store screenshot mode: `flutter run --dart-define=SCREENSHOT=true`
 /// Seeds a full, good-looking year, skips onboarding, unlocks premium and
@@ -68,7 +69,15 @@ const String kShotDir = '/Users/casparbaumeister/Documents/projekte/pixi/pixi_ap
 
 ProviderContainer _container() => ProviderScope.containerOf(rootNavigatorKey.currentContext!);
 
+/// Navigation runs after the next frame: VM-service calls can arrive in the
+/// middle of a build, and touching the navigator there locks it for good.
 String shotNav(String where, [String arg = '']) {
+  WidgetsBinding.instance.addPostFrameCallback((_) => _shotNav(where, arg));
+  WidgetsBinding.instance.scheduleFrame();
+  return 'scheduled $where';
+}
+
+void _shotNav(String where, String arg) {
   final nav = rootNavigatorKey.currentState!;
   final c = _container();
   final maps = c.read(appProvider).maps;
@@ -104,12 +113,14 @@ String shotNav(String where, [String arg = '']) {
     case 'onboarding':
       push(OnboardingScreen(startStep: arg.isEmpty ? null : arg));
       break;
+    case 'splash':
+      push(Scaffold(body: PixiSplash(onDone: () {})));
+      break;
     case 'de':
     case 'en':
       c.read(localeOverrideProvider.notifier).state = Locale(where);
       break;
   }
-  return 'ok $where';
 }
 
 Future<String> shotCapture(String name, [double pixelRatio = 3]) async {

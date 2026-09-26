@@ -1,9 +1,12 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../app.dart';
 import '../../core/dates.dart';
+import '../../core/stats.dart';
 import '../../core/strings.dart';
 import '../../core/theme.dart';
 import '../../data/providers.dart';
@@ -61,15 +64,18 @@ class _CheckinScreenState extends ConsumerState<CheckinScreen> {
 
   void _finish() {
     final notifier = ref.read(appProvider.notifier);
-    final settings = ref.read(appProvider).settings;
-    final first = settings.checkinCount == 0 && !settings.feedbackAfterCheckinShown;
     notifier.markCheckinDone(_date);
+    final data = ref.read(appProvider);
+    final year = Dates.today().year;
+    final streak = data.maps.fold<int>(
+        0, (best, m) => max(best, computeStats(m, data.entriesFor(m.id), year).streak));
     Navigator.of(context).pop();
-    if (first) {
-      notifier.updateSettings((s) => s.copyWith(feedbackAfterCheckinShown: true));
+    // Ask how Pixi feels exactly once: after the first 3-day streak.
+    if (streak >= 3 && !data.settings.reviewAfterStreakShown) {
+      notifier.updateSettings((s) => s.copyWith(reviewAfterStreakShown: true));
       Future<void>.delayed(const Duration(milliseconds: 600), () {
         final ctx = rootNavigatorKey.currentContext;
-        if (ctx != null) FeedbackSheet.show(ctx, kind: FeedbackKind.firstCheckin);
+        if (ctx != null && ctx.mounted) FeedbackSheet.show(ctx, kind: FeedbackKind.streak);
       });
     }
   }
