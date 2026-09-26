@@ -1,39 +1,31 @@
-Dein ganzes Jahr in einem Bild. Jeden Morgen eine Frage, jeden Tag eine Farbe – und nach ein paar Wochen siehst du, was deine Tage wirklich prägt.
+Dein ganzes Jahr in einem Bild. Jeden Morgen eine Frage, jeden Tag eine Farbe. Nach ein paar Wochen siehst du, was deine Tage wirklich prägt.
 
-Pixi ist ein wunderschöner „Year in Pixels“-Stimmungstracker mit einer kleinen schwarzen Katze, die dich fragt, wie gestern war. Farbe antippen, fertig. Jeder Tag wird ein Pixel, jedes Jahr ein leuchtendes Bild, das du gerne anschaust.
+Pixi ist ein Stimmungstracker im Stil „Year in Pixels“ mit einer kleinen gezeichneten Katze, die dich fragt, wie gestern war. Farbe antippen, fertig. Jeder Tag wird ein Pixel, jedes Jahr ein leuchtendes Bild, das du gerne anschaust.
 
 EINE FRAGE, 15 SEKUNDEN
-• Morgens eine sanfte Erinnerung – Pixi fragt nach gestern
-• Farbe antippen und du bist durch. Kein Tippen, kein Druck
-• Einen Tag verpasst? Einfach im Kalender antippen und nachtragen
-
-DEIN JAHR IN PIXELN
-• 12 Monate × 31 Tage in einem leuchtenden Raster
-• Jede Map leuchtet in ihrer Farbe – Stimmung in Lila, Schlaf in Schwarz, Weinen in Hellblau, Training in Grün
-• Zwischen deinen Maps wischen, jeden Tag antippen und ansehen oder ändern
+• Jeden Morgen eine sanfte Erinnerung
+• Farbe antippen. Kein Schreiben, kein Druck
+• Einen Tag verpasst? Einfach später nachtragen
 
 MEHR ALS NUR STIMMUNG
-• Fertige Vorlagen: Stimmung, Schlaf, Träume, Energie, Periode, Schmerzen, Training, Alkohol, Meditation, Lesen, Wasser, Bildschirmzeit, Dankbarkeit und mehr
-• Oder deine eigene Map: Titel, Frage, Farben und Stufen – ganz wie du willst
-• 4 Maps kostenlos, für immer
+• Vorlagen für Stimmung, Schlaf, Träume, Energie, Periode, Schmerzen, Training, Alkohol, Meditation, Lesen, Wasser, Bildschirmzeit, Dankbarkeit und mehr
+• Oder deine eigene Map mit eigener Frage, eigenen Farben und Stufen
 
-SIEH, WAS DICH BEWEGT
-• Bester Monat, schwächster Wochentag, Serien und Verteilung
-• Zwei Maps übereinander: Bessere Stimmung nach guten Nächten? Pixi rechnet es aus und sagt es dir in einem Satz
+SIEH, WAS ZUSAMMENGEHÖRT
+• Pixi zeigt, welche Farben zusammen auftauchen, zum Beispiel erholsame Nächte und strahlende Tage
+• Dein Monat im Vergleich zum letzten und was an welchem Wochentag auffällt
 
 DEIN JAHR ALS POSTER
-• Jede Map als rundes Jahresrad mit Pixi in der Mitte
-• Als Bild teilen – kostenlos, perfekt für deine Story oder als Poster an der Wand
+• Jede Map als rundes Jahresrad, zum Teilen oder für die Wand
 
 PRIVAT VON ANFANG AN
-• Kein Konto, keine Werbung, kein Tracking
-• Deine Einträge bleiben auf deinem Gerät. Export jederzeit möglich
+• Kein Konto, keine Werbung. Deine Einträge bleiben auf deinem Gerät
 
 PIXI PREMIUM
-Unbegrenzt Maps, Statistiken und Zusammenhänge. Wähle ein Jahresabo oder zahle einmal für immer – kein Monatsabo.
-Das Jahresabo verlängert sich automatisch, wenn es nicht mindestens 24 Stunden vor Ablauf des Zeitraums gekündigt wird. Die Zahlung erfolgt über deinen Apple-Account; verwalten und kündigen kannst du in den Einstellungen deines App-Store-Accounts.
+Pixi ist mit bis zu 4 Maps kostenlos. Pixi Premium schaltet unbegrenzt Maps und alle Statistiken frei: Teste das Monatsabo 3 Tage kostenlos oder zahle einmal und behalte Pixi für immer.
+Das Monatsabo verlängert sich automatisch, wenn es nicht mindestens 24 Stunden vor Ende des aktuellen Zeitraums gekündigt wird. Die Zahlung erfolgt über deinen Apple Account. Verwalten und kündigen kannst du es in den Einstellungen deines App Store Accounts.
 
 Nutzungsbedingungen: https://www.apple.com/legal/internet-services/itunes/dev/stdeula/
 Datenschutz: https://caspar-baumeister.github.io/pixi/privacy.html
 
-Fragen oder Ideen? Pixi liest jede Nachricht: caspar.baumeister.dev@gmail.com
+Fragen oder Ideen? Caspar, der Entwickler, liest jede Nachricht: caspar.baumeister.dev@gmail.com

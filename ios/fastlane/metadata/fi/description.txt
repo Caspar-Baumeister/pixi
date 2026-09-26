@@ -1,0 +1,31 @@
+Koko vuotesi yhdessä kuvassa. Yksi kysymys joka aamu, yksi väri päivässä. Muutaman viikon päästä näet, mikä todella muovaa päiviäsi.
+
+Pixi on "Year in Pixels" tyylinen mielialan seuranta, jossa pieni piirretty kissa kysyy, millainen eilinen oli. Napauta väriä, valmis. Jokaisesta päivästä tulee pikseli ja jokaisesta vuodesta hehkuva kuva, jota katsot mielelläsi.
+
+YKSI KYSYMYS, 15 SEKUNTIA
+• Lempeä muistutus joka aamu
+• Napauta väriä. Ei kirjoittamista, ei paineita
+• Jäikö päivä väliin? Täytä se myöhemmin
+
+PALJON MUUTAKIN KUIN MIELIALA
+• Mallipohjat mielialalle, unelle, unille, energialle, kuukautisille, kivulle, treenille, alkoholille, meditaatiolle, lukemiselle, vedelle, ruutuajalle, kiitollisuudelle ja muulle
+• Tai luo oma karttasi omalla kysymyksellä, väreillä ja tasoilla
+
+NÄE, MIKÄ KUULUU YHTEEN
+• Pixi näyttää, mitkä värit esiintyvät yhdessä, kuten levolliset yöt ja säteilevät päivät
+• Kuukautesi verrattuna edelliseen ja mikä erottuu minäkin viikonpäivänä
+
+VUOTESI JULISTEENA
+• Jokainen kartta pyöreänä vuosikiekkona, jaettavaksi tai seinälle
+
+YKSITYINEN ALUSTA ALKAEN
+• Ei tiliä, ei mainoksia. Tietosi pysyvät laitteellasi
+
+PIXI PREMIUM
+Pixi on ilmainen enintään 4 kartalla. Pixi Premium avaa rajattomat kartat ja kaikki tilastot: kokeile kuukausitilausta 3 päivää ilmaiseksi tai maksa kerran ja saat käyttöoikeuden pysyvästi.
+Kuukausitilaus uusiutuu automaattisesti, ellei sitä peruta vähintään 24 tuntia ennen nykyisen jakson päättymistä. Maksu veloitetaan Apple-tililtäsi. Voit hallita tai perua tilauksen App Store tilisi asetuksissa.
+
+Käyttöehdot: https://www.apple.com/legal/internet-services/itunes/dev/stdeula/
+Tietosuojakäytäntö: https://caspar-baumeister.github.io/pixi/privacy.html
+
+Kysyttävää tai ideoita? Kehittäjä Caspar lukee jokaisen viestin: caspar.baumeister.dev@gmail.com

@@ -1,0 +1,31 @@
+Toute ton année en une seule image. Une question chaque matin, une couleur par jour. Après quelques semaines, tu vois ce qui façonne vraiment tes journées.
+
+Pixi est un suivi d'humeur façon « Year in Pixels » avec un petit chat dessiné qui te demande comment s'est passé hier. Touche une couleur, c'est fait. Chaque jour devient un pixel, chaque année une image lumineuse que tu aimes regarder.
+
+UNE QUESTION, 15 SECONDES
+• Un doux rappel chaque matin
+• Touche une couleur. Rien à écrire, aucune pression
+• Un jour oublié ? Complète-le plus tard
+
+BIEN PLUS QUE L'HUMEUR
+• Des modèles pour l'humeur, le sommeil, les rêves, l'énergie, les règles, la douleur, le sport, l'alcool, la méditation, la lecture, l'eau, le temps d'écran, la gratitude et plus encore
+• Ou crée ta propre carte avec ta question, tes couleurs et tes niveaux
+
+VOIS CE QUI VA ENSEMBLE
+• Pixi montre quelles couleurs apparaissent ensemble, comme des nuits reposantes et des journées radieuses
+• Ton mois comparé au précédent, et ce qui ressort selon le jour de la semaine
+
+TON ANNÉE EN POSTER
+• Chaque carte en roue de l'année, à partager ou à accrocher au mur
+
+PRIVÉ PAR NATURE
+• Pas de compte, pas de pub. Tes données restent sur ton appareil
+
+PIXI PREMIUM
+Pixi est gratuit jusqu'à 4 cartes. Pixi Premium débloque les cartes illimitées et toutes les statistiques : essaie l'abonnement mensuel gratuitement pendant 3 jours ou paie une seule fois pour un accès à vie.
+L'abonnement mensuel se renouvelle automatiquement, sauf s'il est résilié au moins 24 heures avant la fin de la période en cours. Le paiement est débité sur ton compte Apple. Tu peux le gérer ou le résilier dans les réglages de ton compte App Store.
+
+Conditions d'utilisation : https://www.apple.com/legal/internet-services/itunes/dev/stdeula/
+Politique de confidentialité : https://caspar-baumeister.github.io/pixi/privacy.html
+
+Des questions ou des idées ? Caspar, le développeur, lit chaque message : caspar.baumeister.dev@gmail.com

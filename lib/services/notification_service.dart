@@ -40,6 +40,18 @@ class NotificationService {
     _ready = true;
   }
 
+  /// True when the app was cold-started by tapping the reminder.
+  Future<bool> launchedFromNotification() async {
+    try {
+      await init();
+      final details = await _plugin.getNotificationAppLaunchDetails();
+      return details?.didNotificationLaunchApp ?? false;
+    } catch (e) {
+      debugPrint('Launch details failed: $e');
+      return false;
+    }
+  }
+
   Future<bool> requestPermission() async {
     await init();
     if (defaultTargetPlatform == TargetPlatform.iOS) {

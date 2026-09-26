@@ -1,0 +1,1 @@
+emocions,sentiments,hàbits,calendari,gat,bonic,son,regla,somnis,colors,benestar,humor

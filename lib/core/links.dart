@@ -9,6 +9,7 @@ class Links {
 
   /// App Store (Apple ID of the Pixi app in App Store Connect).
   static const String appStoreId = '6814462515';
+  static const String appStore = 'https://apps.apple.com/app/id$appStoreId';
   static const String writeReview = 'https://apps.apple.com/app/id$appStoreId?action=write-review';
 
   /// Caspar on X.

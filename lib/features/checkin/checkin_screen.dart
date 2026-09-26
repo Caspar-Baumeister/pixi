@@ -34,8 +34,8 @@ class _CheckinScreenState extends ConsumerState<CheckinScreen> {
   @override
   void initState() {
     super.initState();
-    // Before noon we ask about yesterday, afterwards about today.
-    _date = DateTime.now().hour < 12 ? Dates.yesterday() : Dates.today();
+    // The first day that still has an open question: yesterday, else today.
+    _date = ref.read(appProvider.notifier).checkinDate;
     _pager = PageController();
   }
 

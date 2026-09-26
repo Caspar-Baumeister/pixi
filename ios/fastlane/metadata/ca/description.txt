@@ -1,0 +1,31 @@
+Tot el teu any en una sola imatge. Una pregunta cada matí, un color cada dia. Al cap d'unes setmanes veus què marca de debò els teus dies.
+
+Pixi és un registre de l'estat d'ànim a l'estil "Year in Pixels" amb un gatet dibuixat que et pregunta com va anar ahir. Toca un color i ja està. Cada dia esdevé un píxel i cada any una imatge lluminosa que t'encantarà mirar.
+
+UNA PREGUNTA, 15 SEGONS
+• Un recordatori suau cada matí
+• Toca un color. Res a escriure, cap pressió
+• T'has saltat un dia? Omple'l més tard
+
+MOLT MÉS QUE L'ESTAT D'ÀNIM
+• Plantilles per a l'estat d'ànim, el son, els somnis, l'energia, la regla, el dolor, l'entrenament, l'alcohol, la meditació, la lectura, l'aigua, el temps de pantalla, la gratitud i més
+• O crea el teu propi mapa amb la teva pregunta, els teus colors i els teus nivells
+
+DESCOBREIX QUÈ VA JUNT
+• Pixi et mostra quins colors apareixen junts, com nits reparadores i dies radiants
+• El teu mes comparat amb l'anterior i què destaca cada dia de la setmana
+
+EL TEU ANY COM A PÒSTER
+• Cada mapa com una roda de l'any, per compartir o penjar a la paret
+
+PRIVAT DES DEL PRINCIPI
+• Sense compte ni anuncis. Les teves dades es queden al teu dispositiu
+
+PIXI PREMIUM
+Pixi és gratuït amb fins a 4 mapes. Pixi Premium desbloqueja mapes il·limitats i totes les estadístiques: prova el pla mensual gratis durant 3 dies o paga una sola vegada per tenir-lo per sempre.
+La subscripció mensual es renova automàticament tret que es cancel·li com a mínim 24 hores abans del final del període actual. El pagament es carrega al teu compte d'Apple. Pots gestionar-la o cancel·lar-la a la configuració del teu compte de l'App Store.
+
+Condicions d'ús: https://www.apple.com/legal/internet-services/itunes/dev/stdeula/
+Política de privadesa: https://caspar-baumeister.github.io/pixi/privacy.html
+
+Preguntes o idees? En Caspar, el desenvolupador, llegeix tots els missatges: caspar.baumeister.dev@gmail.com

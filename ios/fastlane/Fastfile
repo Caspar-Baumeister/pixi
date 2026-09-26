@@ -7,6 +7,7 @@
 #   fastlane release    # build + upload binary AND metadata/screenshots (no auto-submit)
 #   fastlane beta       # build + upload to TestFlight
 #   fastlane metadata   # only texts + screenshots (fastlane/metadata, fastlane/screenshots)
+#   fastlane metadata_text # only the texts of all languages
 #   fastlane build      # just produce a signed .ipa
 #   fastlane status     # check the App Store Connect record
 
@@ -129,7 +130,27 @@ platform :ios do
   end
 
   desc "Build and upload to TestFlight"
+  desc "Upload only the store texts of all languages (no screenshots, no binary)"
+  lane :metadata_text do
+    upload_to_app_store(
+      skip_binary_upload:  true,
+      skip_screenshots:    true,
+      submit_for_review:   false,
+      force:               true,
+      run_precheck_before_submit: false,
+      precheck_include_in_app_purchases: false
+    )
+  end
+
   lane :beta do
+    # Agent runner shortcut: with .agent/metadata_only present, `touch .agent/upload`
+    # uploads only the store texts instead of building a new binary.
+    flag = File.join(REPO_ROOT, ".agent", "metadata_only")
+    if File.exist?(flag)
+      File.delete(flag)
+      metadata_text
+      next
+    end
     build
     upload_to_testflight(ipa: File.join(IPA_DIR, IPA_NAME), skip_waiting_for_build_processing: true)
     UI.success("Uploaded to TestFlight (processing takes ~5–15 min).")

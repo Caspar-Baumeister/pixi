@@ -359,41 +359,67 @@ class MapLegend extends StatelessWidget {
   Widget build(BuildContext context) {
     final s = S.of(context);
     if (vertical) {
-      return Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          for (var i = map.levels.length - 1; i >= 0; i--)
-            Padding(
-              padding: const EdgeInsets.only(bottom: 9),
-              child: GestureDetector(
-                onTap: onTap == null ? null : () => onTap!(i),
-                child: Row(
-                  children: [
-                    Container(
-                      width: 14,
-                      height: 14,
-                      decoration: BoxDecoration(
-                        color: map.levels[i].color,
-                        borderRadius: BorderRadius.circular(4),
-                        boxShadow: [BoxShadow(color: map.baseColor.withValues(alpha: 0.3), blurRadius: 6)],
+      // Labels are written out in full: up to two lines, and the font
+      // shrinks a little when a single word would not fit the column.
+      return LayoutBuilder(builder: (context, c) {
+        const chip = 14.0, gap = 7.0;
+        final avail = (c.maxWidth.isFinite ? c.maxWidth : 120) - chip - gap;
+        var size = 12.0;
+        final labels = [for (final l in map.levels) s.r(l.label)];
+        for (final label in labels) {
+          // Flutter may break after a hyphen, so measure the parts separately.
+          for (final word in label.split(RegExp(r'\s+|(?<=-)'))) {
+            if (word.isEmpty) continue;
+            final tp = TextPainter(
+              text: TextSpan(text: word, style: PixiText.label(size: 12)),
+              textDirection: TextDirection.ltr,
+              maxLines: 1,
+            )..layout();
+            // a little headroom, an exact fit would still wrap on rounding
+            if (tp.width > avail * 0.96) size = min(size, 12 * avail * 0.94 / tp.width);
+          }
+        }
+        size = max(8.0, size);
+        return Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            for (var i = map.levels.length - 1; i >= 0; i--)
+              Padding(
+                padding: const EdgeInsets.only(bottom: 8),
+                child: GestureDetector(
+                  onTap: onTap == null ? null : () => onTap!(i),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.only(top: 1),
+                        child: Container(
+                          width: chip,
+                          height: chip,
+                          decoration: BoxDecoration(
+                            color: map.levels[i].color,
+                            borderRadius: BorderRadius.circular(4),
+                            boxShadow: [BoxShadow(color: map.baseColor.withValues(alpha: 0.3), blurRadius: 6)],
+                          ),
+                        ),
                       ),
-                    ),
-                    const SizedBox(width: 7),
-                    Expanded(
-                      child: Text(
-                        s.r(map.levels[i].label),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: PixiText.label(size: 12, color: PixiColors.inkSoft),
+                      const SizedBox(width: gap),
+                      Expanded(
+                        child: Text(
+                          labels[i],
+                          maxLines: 2,
+                          softWrap: true,
+                          style: PixiText.label(size: size, color: PixiColors.inkSoft).copyWith(height: 1.2),
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
-            ),
-        ],
-      );
+          ],
+        );
+      });
     }
     return Wrap(
       spacing: compact ? 10 : 14,

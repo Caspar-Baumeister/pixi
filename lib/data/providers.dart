@@ -104,6 +104,20 @@ class AppNotifier extends Notifier<AppData> {
 
   bool get checkinDoneToday =>
       state.settings.lastCheckinDate == Dates.key(Dates.today());
+
+  /// The day the check-in asks about: yesterday as long as one of the maps
+  /// still misses yesterday, otherwise today.
+  DateTime get checkinDate {
+    final y = Dates.key(Dates.yesterday());
+    final missing = state.maps.any((m) => !(state.entries[m.id]?.containsKey(y) ?? false));
+    return missing ? Dates.yesterday() : Dates.today();
+  }
+
+  /// Marks the check-in as done without counting it (used by the onboarding,
+  /// which already logged yesterday).
+  void markCheckinDoneQuietly() {
+    updateSettings((s) => s.copyWith(lastCheckinDate: Dates.key(Dates.today())));
+  }
 }
 
 final appProvider = NotifierProvider<AppNotifier, AppData>(AppNotifier.new);

@@ -1,0 +1,31 @@
+Cijela tvoja godina na jednoj slici. Jedno pitanje svako jutro, jedna boja svaki dan. Nakon nekoliko tjedana vidiš što zaista oblikuje tvoje dane.
+
+Pixi je praćenje raspoloženja u stilu "Year in Pixels" s malom nacrtanom mačkom koja pita kakav je bio jučerašnji dan. Dodirni boju i gotovo. Svaki dan postaje piksel, svaka godina blistava slika koju rado gledaš.
+
+JEDNO PITANJE, 15 SEKUNDI
+• Nježan podsjetnik svako jutro
+• Dodirni boju. Bez pisanja, bez pritiska
+• Propustio si dan? Popuni ga kasnije
+
+VIŠE OD RASPOLOŽENJA
+• Predlošci za raspoloženje, san, snove, energiju, menstruaciju, bol, trening, alkohol, meditaciju, čitanje, vodu, vrijeme pred ekranom, zahvalnost i još mnogo toga
+• Ili izradi vlastitu kartu s vlastitim pitanjem, bojama i razinama
+
+POGLEDAJ ŠTO IDE ZAJEDNO
+• Pixi pokazuje koje se boje pojavljuju zajedno, poput odmornih noći i blistavih dana
+• Tvoj mjesec u usporedbi s prethodnim i što se ističe kojeg dana u tjednu
+
+TVOJA GODINA KAO POSTER
+• Svaka karta kao okrugli kotač godine, za dijeljenje ili za zid
+
+PRIVATNO OD POČETKA
+• Bez računa, bez oglasa. Tvoji podaci ostaju na tvom uređaju
+
+PIXI PREMIUM
+Pixi je besplatan za do 4 karte. Pixi Premium otključava neograničen broj karata i svu statistiku: isprobaj mjesečni plan besplatno 3 dana ili plati jednom za doživotni pristup.
+Mjesečna pretplata automatski se obnavlja ako se ne otkaže najmanje 24 sata prije kraja trenutnog razdoblja. Plaćanje se naplaćuje s tvog Apple računa. Pretplatom možeš upravljati ili je otkazati u postavkama svog App Store računa.
+
+Uvjeti korištenja: https://www.apple.com/legal/internet-services/itunes/dev/stdeula/
+Pravila privatnosti: https://caspar-baumeister.github.io/pixi/privacy.html
+
+Pitanja ili ideje? Caspar, razvojni programer, čita svaku poruku: caspar.baumeister.dev@gmail.com

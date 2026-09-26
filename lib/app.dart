@@ -42,14 +42,29 @@ class _PixiAppState extends ConsumerState<PixiApp> {
     super.initState();
     PremiumService.instance.pro.addListener(_syncPremium);
     PremiumService.instance.init();
-    // Tapping the morning notification opens the check-in directly.
-    NotificationService.instance.onTap = () {
-      final nav = rootNavigatorKey.currentState;
-      if (nav == null) return;
-      final data = ref.read(appProvider);
-      if (!data.settings.onboardingDone || data.maps.isEmpty) return;
-      nav.push(MaterialPageRoute(builder: (_) => const CheckinScreen()));
-    };
+    // Tapping the morning notification opens the questions directly, both
+    // while the app runs and when the tap starts the app.
+    NotificationService.instance.onTap = _openCheckin;
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      if (await NotificationService.instance.launchedFromNotification()) _openCheckin();
+    });
+  }
+
+  void _openCheckin() {
+    final nav = rootNavigatorKey.currentState;
+    if (nav == null) {
+      WidgetsBinding.instance.addPostFrameCallback((_) => _openCheckin());
+      return;
+    }
+    final data = ref.read(appProvider);
+    if (!data.settings.onboardingDone || data.maps.isEmpty) return;
+    nav.popUntil((r) => r.isFirst);
+    nav.push(MaterialPageRoute(
+      settings: const RouteSettings(name: 'checkin'),
+      builder: (_) => const CheckinScreen(),
+    ));
+    // skip the splash, the questions are what the user came for
+    if (_splash && mounted) setState(() => _splash = false);
   }
 
   @override

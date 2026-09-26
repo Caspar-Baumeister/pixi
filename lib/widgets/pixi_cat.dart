@@ -81,12 +81,14 @@ class CatAnims {
 
   static const alcohol = CatAnim.animated('alcohol', 'assets/cats/alcohol.webp', still: 'assets/cats/alcohol_still.png');
 
+  static const period = CatAnim.animated('period', 'assets/cats/period.webp', still: 'assets/cats/period_still.png');
+
   static final Map<String, CatAnim> all = {
-    for (final a in [idle, neutral, wave, curious, sad, happy, gym, bell, sleep, meditation, water, reading, anxiety, energy, gratitude, screen, pain, social, alcohol]) a.id: a,
+    for (final a in [idle, neutral, wave, curious, sad, happy, gym, bell, sleep, meditation, water, reading, anxiety, energy, gratitude, screen, pain, social, alcohol, period]) a.id: a,
   };
 
   /// Cats the user can pick for a map, in the order shown in the editor.
-  static const pickable = [neutral, idle, happy, wave, curious, gym, sleep, sad, bell, meditation, water, reading, anxiety, energy, gratitude, screen, pain, social, alcohol];
+  static const pickable = [neutral, idle, happy, wave, curious, gym, sleep, sad, bell, meditation, water, reading, anxiety, energy, gratitude, screen, pain, social, alcohol, period];
 
   /// Label key for the picker (resolved via `S.t`).
   static String labelKey(String id) => 'cat_$id';
@@ -101,7 +103,7 @@ class CatAnims {
   static CatAnim forMap(PixMap? m) {
     if (m == null) return idle;
     if (m.catId != 'pixi' && all.containsKey(m.catId)) return all[m.catId]!;
-    const byTemplate = {'training': 'gym', 'sleep': 'sleep', 'dreams': 'sleep', 'cry': 'sad', 'meditation': 'meditation', 'water': 'water', 'reading': 'reading', 'anxiety': 'anxiety', 'energy': 'energy', 'gratitude': 'gratitude', 'screen': 'screen', 'pain': 'pain', 'social': 'social', 'alcohol': 'alcohol'};
+    const byTemplate = {'training': 'gym', 'sleep': 'sleep', 'dreams': 'sleep', 'cry': 'sad', 'meditation': 'meditation', 'water': 'water', 'reading': 'reading', 'anxiety': 'anxiety', 'energy': 'energy', 'gratitude': 'gratitude', 'screen': 'screen', 'pain': 'pain', 'social': 'social', 'alcohol': 'alcohol', 'period': 'period'};
     return all[byTemplate[m.templateId]] ?? idle;
   }
 }

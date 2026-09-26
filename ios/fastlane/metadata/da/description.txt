@@ -1,0 +1,31 @@
+Hele dit år i ét billede. Ét spørgsmål hver morgen, én farve om dagen. Efter et par uger ser du, hvad der virkelig præger dine dage.
+
+Pixi er en humørtracker i "Year in Pixels" stil med en lille tegnet kat, der spørger, hvordan i går var. Tryk på en farve, færdig. Hver dag bliver en pixel, hvert år et lysende billede, du gerne ser på.
+
+ÉT SPØRGSMÅL, 15 SEKUNDER
+• En blid påmindelse hver morgen
+• Tryk på en farve. Ingen skrivning, intet pres
+• Glemt en dag? Udfyld den senere
+
+MERE END BARE HUMØR
+• Skabeloner til humør, søvn, drømme, energi, menstruation, smerter, træning, alkohol, meditation, læsning, vand, skærmtid, taknemmelighed og mere
+• Eller lav dit eget kort med dit eget spørgsmål, dine egne farver og niveauer
+
+SE HVAD DER HØRER SAMMEN
+• Pixi viser, hvilke farver der dukker op sammen, som udhvilede nætter og strålende dage
+• Din måned sammenlignet med den forrige, og hvad der skiller sig ud på hvilken ugedag
+
+DIT ÅR SOM PLAKAT
+• Hvert kort som et rundt årshjul, til at dele eller hænge på væggen
+
+PRIVAT FRA START
+• Ingen konto, ingen reklamer. Dine data bliver på din enhed
+
+PIXI PREMIUM
+Pixi er gratis med op til 4 kort. Pixi Premium låser op for ubegrænsede kort og al statistik: prøv månedsabonnementet gratis i 3 dage, eller betal én gang for livslang adgang.
+Månedsabonnementet fornyes automatisk, medmindre det opsiges mindst 24 timer før udgangen af den aktuelle periode. Betalingen trækkes fra din Apple-konto. Du kan administrere eller opsige det i indstillingerne for din App Store-konto.
+
+Brugsvilkår: https://www.apple.com/legal/internet-services/itunes/dev/stdeula/
+Privatlivspolitik: https://caspar-baumeister.github.io/pixi/privacy.html
+
+Spørgsmål eller idéer? Caspar, udvikleren, læser alle beskeder: caspar.baumeister.dev@gmail.com

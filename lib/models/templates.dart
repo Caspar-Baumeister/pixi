@@ -173,6 +173,7 @@ const List<MapTemplate> kTemplates = [
   ),
   MapTemplate(
     id: 'period',
+    catId: 'period',
     category: TemplateCategory.body,
     baseColor: BaseColors.berry,
     levels: [

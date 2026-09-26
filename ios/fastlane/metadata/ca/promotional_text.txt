@@ -1,0 +1,1 @@
+Una pregunta cada matí, un color cada dia. Mira com el teu any es converteix en una imatge lluminosa amb Pixi, el gatet que et pregunta com va anar ahir.

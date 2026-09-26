@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../core/dates.dart';
+import '../../core/links.dart';
 import '../../core/stats.dart';
 import '../../core/strings.dart';
 import '../../core/theme.dart';
@@ -166,7 +168,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                       children: [
                         Expanded(
                           child: PrimaryButton(
-                            label: checkinDone ? s.t('checkin_done_today') : s.t('checkin_cta'),
+                            label: checkinDone
+                                ? s.t('checkin_done_today')
+                                : (Dates.sameDay(ref.read(appProvider.notifier).checkinDate, Dates.today())
+                                    ? s.t('checkin_cta_today')
+                                    : s.t('checkin_cta')),
                             color: checkinDone ? PixiColors.paperDark : PixiColors.ink,
                             textColor: checkinDone ? PixiColors.inkSoft : Colors.white,
                             onPressed: () => Navigator.of(context).push(
@@ -199,7 +205,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                               final ok = await ShareService.shareBoundary(
                                 _keyFor(current.id),
                                 fileName: 'pixi_${s.r(current.title)}_$year.png',
-                                text: s.t('share_text'),
+                                text: '${s.t('share_text')}\n${Links.appStore}',
                                 origin: btnCtx,
                               );
                               if (!ok && context.mounted) {
@@ -272,7 +278,7 @@ class _MapPage extends StatelessWidget {
     final stats = computeStats(map, entries, year);
     return LayoutBuilder(builder: (context, c) {
       // The grid fills the height; legend + stats sit in a slim column beside it.
-      const sideW = 84.0;
+      const sideW = 96.0;
       const gap = 14.0;
       const padH = 16.0;
       final ratio = PixelGrid.heightForWidth(100) / 100;

@@ -164,6 +164,8 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
           remindersEnabled: enabled,
           onboardingDone: true,
         ));
+    // Yesterday was just logged here, so today's check-in counts as done.
+    if (_howLevel != null) notifier.markCheckinDoneQuietly();
     if (enabled && mounted) {
       final s = S.of(context);
       await NotificationService.instance.scheduleDaily(

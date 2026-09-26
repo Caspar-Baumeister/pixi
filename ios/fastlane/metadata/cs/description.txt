@@ -1,0 +1,31 @@
+Celý tvůj rok v jednom obrázku. Jedna otázka každé ráno, jedna barva každý den. Po pár týdnech uvidíš, co tvé dny opravdu ovlivňuje.
+
+Pixi je sledování nálad ve stylu "Year in Pixels" s malou kreslenou kočkou, která se ptá, jaký byl včerejšek. Klepni na barvu a hotovo. Z každého dne je pixel, z každého roku zářivý obrázek, na který se rád díváš.
+
+JEDNA OTÁZKA, 15 SEKUND
+• Jemná připomínka každé ráno
+• Klepni na barvu. Žádné psaní, žádný tlak
+• Vynechal jsi den? Doplň ho později
+
+VÍC NEŽ JEN NÁLADA
+• Šablony pro náladu, spánek, sny, energii, menstruaci, bolest, trénink, alkohol, meditaci, čtení, vodu, čas u obrazovky, vděčnost a další
+• Nebo si vytvoř vlastní mapu s vlastní otázkou, barvami a úrovněmi
+
+PODÍVEJ SE, CO K SOBĚ PATŘÍ
+• Pixi ukazuje, které barvy se objevují spolu, třeba klidné noci a zářivé dny
+• Tvůj měsíc ve srovnání s předchozím a co vyčnívá v jednotlivých dnech týdne
+
+TVŮJ ROK JAKO PLAKÁT
+• Každá mapa jako kulaté kolo roku, ke sdílení nebo na zeď
+
+SOUKROMÍ OD ZAČÁTKU
+• Žádný účet, žádné reklamy. Tvá data zůstávají ve tvém zařízení
+
+PIXI PREMIUM
+Pixi je zdarma až pro 4 mapy. Pixi Premium odemyká neomezený počet map a všechny statistiky: vyzkoušej měsíční předplatné 3 dny zdarma, nebo zaplať jednou a měj přístup navždy.
+Měsíční předplatné se automaticky obnovuje, pokud není zrušeno alespoň 24 hodin před koncem aktuálního období. Platba se strhává z tvého účtu Apple. Spravovat nebo zrušit ho můžeš v nastavení svého účtu App Store.
+
+Podmínky použití: https://www.apple.com/legal/internet-services/itunes/dev/stdeula/
+Zásady ochrany osobních údajů: https://caspar-baumeister.github.io/pixi/privacy.html
+
+Otázky nebo nápady? Caspar, vývojář, čte každou zprávu: caspar.baumeister.dev@gmail.com

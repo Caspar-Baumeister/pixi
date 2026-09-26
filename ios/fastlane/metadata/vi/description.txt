@@ -1,0 +1,31 @@
+Cả năm của bạn trong một bức tranh. Mỗi sáng một câu hỏi, mỗi ngày một màu. Sau vài tuần, bạn sẽ thấy điều gì thực sự định hình những ngày của mình.
+
+Pixi là ứng dụng theo dõi tâm trạng kiểu "Year in Pixels" với một chú mèo nhỏ vẽ tay hỏi bạn hôm qua thế nào. Chạm vào một màu là xong. Mỗi ngày thành một pixel, mỗi năm thành một bức tranh rực rỡ mà bạn thích ngắm nhìn.
+
+MỘT CÂU HỎI, 15 GIÂY
+• Lời nhắc nhẹ nhàng mỗi sáng
+• Chạm vào một màu. Không cần gõ, không áp lực
+• Lỡ một ngày? Điền bù sau cũng được
+
+KHÔNG CHỈ LÀ TÂM TRẠNG
+• Mẫu cho tâm trạng, giấc ngủ, giấc mơ, năng lượng, kỳ kinh, cơn đau, tập luyện, rượu bia, thiền, đọc sách, uống nước, thời gian dùng màn hình, lòng biết ơn và nhiều hơn nữa
+• Hoặc tạo bản đồ riêng với câu hỏi, màu sắc và mức độ của riêng bạn
+
+THẤY ĐIỀU GÌ ĐI CÙNG NHAU
+• Pixi cho thấy những màu nào thường xuất hiện cùng nhau, như những đêm ngon giấc và những ngày rạng rỡ
+• Tháng này so với tháng trước, và điều gì nổi bật vào từng ngày trong tuần
+
+NĂM CỦA BẠN THÀNH POSTER
+• Mỗi bản đồ là một vòng tròn năm, để chia sẻ hoặc treo lên tường
+
+RIÊNG TƯ TỪ ĐẦU
+• Không tài khoản, không quảng cáo. Dữ liệu của bạn nằm trên thiết bị của bạn
+
+PIXI PREMIUM
+Pixi miễn phí với tối đa 4 bản đồ. Pixi Premium mở khóa bản đồ không giới hạn và toàn bộ thống kê: dùng thử gói tháng miễn phí 3 ngày, hoặc trả một lần để dùng trọn đời.
+Gói đăng ký hàng tháng tự động gia hạn trừ khi được hủy ít nhất 24 giờ trước khi kết thúc kỳ hiện tại. Khoản thanh toán được tính vào Tài khoản Apple của bạn. Bạn có thể quản lý hoặc hủy trong phần cài đặt tài khoản App Store.
+
+Điều khoản sử dụng: https://www.apple.com/legal/internet-services/itunes/dev/stdeula/
+Chính sách quyền riêng tư: https://caspar-baumeister.github.io/pixi/privacy.html
+
+Có câu hỏi hoặc ý tưởng? Caspar, nhà phát triển, đọc mọi tin nhắn: caspar.baumeister.dev@gmail.com

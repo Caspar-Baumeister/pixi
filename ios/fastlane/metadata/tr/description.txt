@@ -1,0 +1,31 @@
+Tüm yılın tek bir resimde. Her sabah bir soru, her gün bir renk. Birkaç hafta sonra günlerini gerçekten neyin şekillendirdiğini görürsün.
+
+Pixi, dünün nasıl geçtiğini soran küçük çizim bir kediyle "Year in Pixels" tarzında bir ruh hali takipçisidir. Bir renge dokun, bitti. Her gün bir piksel, her yıl bakmaktan keyif aldığın parlak bir resim olur.
+
+TEK SORU, 15 SANİYE
+• Her sabah nazik bir hatırlatma
+• Bir renge dokun. Yazmak yok, baskı yok
+• Bir günü mü kaçırdın? Sonra doldur
+
+RUH HALİNDEN FAZLASI
+• Ruh hali, uyku, rüyalar, enerji, regl, ağrı, antrenman, alkol, meditasyon, okuma, su, ekran süresi, şükran ve daha fazlası için şablonlar
+• Ya da kendi sorun, renklerin ve seviyelerinle kendi haritanı oluştur
+
+NEYİN BİRLİKTE GİTTİĞİNİ GÖR
+• Pixi hangi renklerin birlikte göründüğünü gösterir, örneğin dinlendirici geceler ve parlak günler
+• Ayının bir önceki ayla karşılaştırması ve haftanın hangi gününde neyin öne çıktığı
+
+POSTER OLARAK YILIN
+• Her harita yuvarlak bir yıl çarkı olarak, paylaşmak ya da duvara asmak için
+
+BAŞTAN SONA GİZLİ
+• Hesap yok, reklam yok. Verilerin cihazında kalır
+
+PIXI PREMIUM
+Pixi en fazla 4 harita ile ücretsizdir. Pixi Premium sınırsız harita ve tüm istatistikleri açar: aylık planı 3 gün ücretsiz dene ya da ömür boyu erişim için bir kez öde.
+Aylık abonelik, mevcut dönemin bitiminden en az 24 saat önce iptal edilmediği sürece otomatik olarak yenilenir. Ödeme Apple hesabından alınır. Aboneliğini App Store hesap ayarlarından yönetebilir veya iptal edebilirsin.
+
+Kullanım Koşulları: https://www.apple.com/legal/internet-services/itunes/dev/stdeula/
+Gizlilik Politikası: https://caspar-baumeister.github.io/pixi/privacy.html
+
+Soruların veya fikirlerin mi var? Geliştirici Caspar her mesajı okur: caspar.baumeister.dev@gmail.com
