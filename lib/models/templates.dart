@@ -184,6 +184,7 @@ const List<MapTemplate> kTemplates = [
   ),
   MapTemplate(
     id: 'pain',
+    catId: 'pain',
     category: TemplateCategory.body,
     baseColor: BaseColors.coral,
     levels: [

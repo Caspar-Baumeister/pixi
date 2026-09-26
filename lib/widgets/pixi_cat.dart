@@ -72,12 +72,14 @@ class CatAnims {
 
   static const screen = CatAnim.animated('screen', 'assets/cats/screen.webp', still: 'assets/cats/screen_still.png');
 
+  static const pain = CatAnim.animated('pain', 'assets/cats/pain.webp', still: 'assets/cats/pain_still.png');
+
   static final Map<String, CatAnim> all = {
-    for (final a in [idle, neutral, wave, curious, sad, happy, gym, bell, sleep, meditation, water, reading, anxiety, energy, gratitude, screen]) a.id: a,
+    for (final a in [idle, neutral, wave, curious, sad, happy, gym, bell, sleep, meditation, water, reading, anxiety, energy, gratitude, screen, pain]) a.id: a,
   };
 
   /// Cats the user can pick for a map, in the order shown in the editor.
-  static const pickable = [neutral, idle, happy, wave, curious, gym, sleep, sad, bell, meditation, water, reading, anxiety, energy, gratitude, screen];
+  static const pickable = [neutral, idle, happy, wave, curious, gym, sleep, sad, bell, meditation, water, reading, anxiety, energy, gratitude, screen, pain];
 
   /// Label key for the picker (resolved via `S.t`).
   static String labelKey(String id) => 'cat_$id';
@@ -92,7 +94,7 @@ class CatAnims {
   static CatAnim forMap(PixMap? m) {
     if (m == null) return idle;
     if (m.catId != 'pixi' && all.containsKey(m.catId)) return all[m.catId]!;
-    const byTemplate = {'training': 'gym', 'sleep': 'sleep', 'dreams': 'sleep', 'cry': 'sad', 'meditation': 'meditation', 'water': 'water', 'reading': 'reading', 'anxiety': 'anxiety', 'energy': 'energy', 'gratitude': 'gratitude', 'screen': 'screen'};
+    const byTemplate = {'training': 'gym', 'sleep': 'sleep', 'dreams': 'sleep', 'cry': 'sad', 'meditation': 'meditation', 'water': 'water', 'reading': 'reading', 'anxiety': 'anxiety', 'energy': 'energy', 'gratitude': 'gratitude', 'screen': 'screen', 'pain': 'pain'};
     return all[byTemplate[m.templateId]] ?? idle;
   }
 }
