@@ -28,3 +28,4 @@ app.*.symbols
 _shots/
 *.mobileprovision
 .agent/
+__pycache__/

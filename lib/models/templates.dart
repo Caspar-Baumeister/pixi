@@ -136,7 +136,7 @@ const List<MapTemplate> kTemplates = [
     id: 'dreams',
     category: TemplateCategory.body,
     baseColor: BaseColors.midnight,
-    catId: 'sleep',
+    catId: 'dreams',
     levels: [
       MapLevel(label: '@l_dr_0', color: Color(0xFFE9E7F0)),
       MapLevel(label: '@l_dr_1', color: Color(0xFFABC0E6)),
