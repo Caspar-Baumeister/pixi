@@ -15,7 +15,6 @@ import '../../models/pix_map.dart';
 import '../../models/templates.dart';
 import '../../services/notification_service.dart';
 import '../../services/premium_service.dart';
-import '../../services/review_service.dart';
 import '../premium/paywall_screen.dart';
 import '../../widgets/circle_year.dart';
 import '../../widgets/hero_ring.dart';
@@ -25,7 +24,7 @@ import '../../widgets/pixel_grid.dart';
 import '../../widgets/pixi_cat.dart';
 import '../../widgets/ui.dart';
 
-enum _Step { hi, name, pick, how, time, circle, stats, corr, support, plan, go }
+enum _Step { hi, name, pick, how, time, circle, stats, corr, plan, go }
 
 /// Long, personal onboarding (structure modelled on Amy): progress bar,
 /// sketched cat, one question per screen, full-width CTA.
@@ -120,9 +119,6 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
         break;
       case _Step.corr:
         _loadPackages();
-        _go(_Step.support);
-        break;
-      case _Step.support:
         _go(_Step.plan);
         break;
       case _Step.plan:
@@ -201,12 +197,6 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
       ref.read(appProvider.notifier).updateSettings((st) => st.copyWith(premium: true));
     }
     _next();
-  }
-
-  Future<void> _rateAndContinue() async {
-    await ReviewService.ask();
-    await Future<void>.delayed(const Duration(milliseconds: 700));
-    if (mounted && _step == _Step.support) _next();
   }
 
   Future<void> _askReminder() async {
@@ -346,15 +336,6 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                       _next();
                     },
             ),
-          ],
-        );
-      case _Step.support:
-        return Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            PrimaryButton(label: s.t('ob_support_rate'), onPressed: _rateAndContinue),
-            const SizedBox(height: 4),
-            SecondaryButton(label: s.t('ob_support_skip'), onPressed: _next),
           ],
         );
       case _Step.plan:
@@ -612,17 +593,6 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                   onTap: () => _toggleExtra(id),
                 ),
             ],
-          ),
-        ]);
-
-      case _Step.support:
-        return _scroll([
-          const SizedBox(height: 8),
-          _header(
-            s,
-            title: s.t('ob_support_title'),
-            subtitle: s.t('ob_support_sub'),
-            illustration: GlowingCat(color: accent, size: 190, catId: 'gratitude'),
           ),
         ]);
 

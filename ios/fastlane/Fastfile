@@ -29,12 +29,23 @@ end
 
 # flutter/pod must run outside fastlane's bundler environment.
 def with_clean_env(&block)
+  run = lambda do
+    # Homebrew's fastlane wrapper sets GEM_HOME/GEM_PATH; they leak into `pod` and break it.
+    saved = ENV.to_h.slice("GEM_HOME", "GEM_PATH")
+    begin
+      ENV.delete("GEM_HOME")
+      ENV.delete("GEM_PATH")
+      block.call
+    ensure
+      ENV.update(saved)
+    end
+  end
   if defined?(Bundler) && Bundler.respond_to?(:with_unbundled_env)
-    Bundler.with_unbundled_env(&block)
+    Bundler.with_unbundled_env(&run)
   elsif defined?(Bundler) && Bundler.respond_to?(:with_original_env)
-    Bundler.with_original_env(&block)
+    Bundler.with_original_env(&run)
   else
-    block.call
+    run.call
   end
 end
 
@@ -145,6 +156,12 @@ platform :ios do
   lane :beta do
     # Agent runner shortcut: with .agent/metadata_only present, `touch .agent/upload`
     # uploads only the store texts instead of building a new binary.
+    shots = File.join(REPO_ROOT, ".agent", "screens_only")
+    if File.exist?(shots)
+      File.delete(shots)
+      metadata
+      next
+    end
     flag = File.join(REPO_ROOT, ".agent", "metadata_only")
     if File.exist?(flag)
       File.delete(flag)
