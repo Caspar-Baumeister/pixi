@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://caspar-baumeister.github.io/pixi/sitemap.xml
