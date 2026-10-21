@@ -96,7 +96,10 @@ hreflang-Paare: Startseiten, Hubs, Support/Hilfe, Vorlage EN/DE, Bullet Journal 
 - Beschreibung in allen 39 Sprachen: Premium-Absatz neu (ganze App, 7 Tage gratis oder Einmalkauf), keine "gratis bis 4 Maps"-Aussage mehr. `release_notes.txt` für 1.1.0 in allen Sprachen.
 - Website (`docs/`, Generator in `~/Code/_seo/preview/pixi_work/build/`, Datenschutz-Quelle jetzt `build/privacy_source.html`): Preismodell, FAQ, "no tracking"-Aussagen ersetzt, Datenschutzerklärung mit PostHog-Abschnitt (Stand 21.10.2026).
 
-### 2.6 Offen
+### 2.6 Build
+- 1.1.0 (12) am 21.10. per `fastlane beta` zu TestFlight hochgeladen. Noch nicht eingereicht.
+
+### 2.7 Offen
 1. Website veröffentlichen (`git push`), Store-Texte mit der Version hochladen (`fastlane metadata_text`).
 2. ASC-Privacy-Label ergänzen: Usage Data (Product Interaction, Analyse), Diagnostics, nicht verknüpft, kein Tracking.
 3. Im Simulator zeigte StoreKit den neuen Trial noch nicht an (Cache nach der Änderung); in TestFlight prüfen, ob "7 days free" erscheint.
