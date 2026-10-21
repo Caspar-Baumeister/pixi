@@ -22,7 +22,7 @@ BAŞTAN SONA GİZLİ
 • Hesap yok, reklam yok. Verilerin cihazında kalır
 
 PIXI PREMIUM
-Pixi en fazla 4 harita ile ücretsizdir. Pixi Premium sınırsız harita ve tüm istatistikleri açar: aylık planı 3 gün ücretsiz dene ya da ömür boyu erişim için bir kez öde.
+Pixi Premium uygulamanın tamamını açar: sınırsız harita, tüm şablonlar, istatistikler ve bağlantılar, yıl çarkı ve poster. Aylık planı 7 gün ücretsiz dene ya da ömür boyu erişim için bir kez öde.
 Aylık abonelik, mevcut dönemin bitiminden en az 24 saat önce iptal edilmediği sürece otomatik olarak yenilenir. Ödeme Apple hesabından alınır. Aboneliğini App Store hesap ayarlarından yönetebilir veya iptal edebilirsin.
 
 Kullanım Koşulları: https://www.apple.com/legal/internet-services/itunes/dev/stdeula/

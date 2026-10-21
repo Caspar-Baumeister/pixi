@@ -22,7 +22,7 @@ ADATVÉDELEM AZ ELEJÉTŐL
 • Nincs fiók, nincs reklám. Az adataid a készülékeden maradnak
 
 PIXI PREMIUM
-A Pixi legfeljebb 4 térképig ingyenes. A Pixi Premium korlátlan térképet és minden statisztikát felold: próbáld ki a havi csomagot 3 napig ingyen, vagy fizess egyszer az örökös hozzáférésért.
+A Pixi Premium a teljes alkalmazást feloldja: korlátlan térkép, minden sablon, statisztikák és összefüggések, az évkerék és a poszter. Próbáld ki a havi csomagot 7 napig ingyen, vagy fizess egyszer az örökös hozzáférésért.
 A havi előfizetés automatikusan megújul, hacsak nem mondod le legalább 24 órával az aktuális időszak vége előtt. A díjat az Apple-fiókod terheli. Az előfizetést az App Store-fiókod beállításaiban kezelheted vagy mondhatod le.
 
 Felhasználási feltételek: https://www.apple.com/legal/internet-services/itunes/dev/stdeula/

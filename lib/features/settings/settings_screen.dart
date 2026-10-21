@@ -12,11 +12,12 @@ import '../../core/strings.dart';
 import '../../core/theme.dart';
 import '../../data/providers.dart';
 import '../../services/notification_service.dart';
+import '../../services/analytics.dart';
 import '../../services/premium_service.dart';
+import '../../services/support_service.dart';
 import '../../services/share_service.dart';
 import '../../widgets/pixi_cat.dart';
 import '../../widgets/ui.dart';
-import '../feedback/feedback_sheet.dart';
 import '../onboarding/onboarding_screen.dart';
 import '../premium/paywall_screen.dart';
 
@@ -191,7 +192,10 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                 contentPadding: EdgeInsets.zero,
                 leading: const Icon(Icons.star_outline_rounded, color: PixiColors.ink),
                 title: Text(s.t('rate'), style: PixiText.body1(color: PixiColors.ink)),
-                onTap: () => launchUrl(Uri.parse(Links.writeReview), mode: LaunchMode.externalApplication),
+                onTap: () {
+                  Analytics.instance.track('rate_tapped', {'source': 'settings'});
+                  launchUrl(Uri.parse(Links.writeReview), mode: LaunchMode.externalApplication);
+                },
               ),
               ListTile(
                 contentPadding: EdgeInsets.zero,
@@ -203,7 +207,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                 ),
                 title: Text(s.t('follow_x'), style: PixiText.body1(color: PixiColors.ink)),
                 subtitle: Text('@casparbuilds', style: PixiText.label(size: 12)),
-                onTap: () => launchUrl(Uri.parse(Links.x), mode: LaunchMode.externalApplication),
+                onTap: () => SupportService.openX(source: 'settings'),
               ),
               Builder(
                 builder: (tileCtx) => ListTile(
@@ -217,7 +221,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                 contentPadding: EdgeInsets.zero,
                 leading: const Icon(Icons.chat_bubble_outline_rounded, color: PixiColors.ink),
                 title: Text(s.t('feedback'), style: PixiText.body1(color: PixiColors.ink)),
-                onTap: () => launchUrl(Uri.parse('mailto:$kFeedbackEmail?subject=Pixi')),
+                onTap: () => SupportService.sendFeedback(),
               ),
               ListTile(
                 contentPadding: EdgeInsets.zero,
@@ -237,6 +241,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                 title: Text(s.t('restore'), style: PixiText.body1(color: PixiColors.ink)),
                 onTap: () async {
                   final ok = await PremiumService.instance.restore();
+                  Analytics.instance.track('restore_tapped', {'restored': ok, 'source': 'settings'});
                   if (!context.mounted) return;
                   if (ok) ref.read(appProvider.notifier).updateSettings((st) => st.copyWith(premium: true));
                   ScaffoldMessenger.of(context).showSnackBar(
@@ -247,7 +252,10 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
               ListTile(
                 contentPadding: EdgeInsets.zero,
                 leading: const Icon(Icons.info_outline_rounded, color: PixiColors.ink),
-                title: Text('${s.t('version')} 1.0.0', style: PixiText.body1(color: PixiColors.ink)),
+                title: FutureBuilder<String>(
+                  future: SupportService.versionLabel(),
+                  builder: (context, v) => Text('${s.t('version')} ${v.data ?? ''}', style: PixiText.body1(color: PixiColors.ink)),
+                ),
               ),
             ],
           ),

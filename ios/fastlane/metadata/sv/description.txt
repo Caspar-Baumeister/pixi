@@ -22,7 +22,7 @@ PRIVAT FRÅN BÖRJAN
 • Inget konto, ingen reklam. Dina uppgifter stannar på din enhet
 
 PIXI PREMIUM
-Pixi är gratis med upp till 4 kartor. Pixi Premium låser upp obegränsat antal kartor och all statistik: prova månadsplanen gratis i 3 dagar eller betala en gång för livstidsåtkomst.
+Pixi Premium låser upp hela appen: obegränsat antal kartor, alla mallar, statistik och samband, årshjulet och affischen. Prova månadsplanen gratis i 7 dagar eller betala en gång för livstidsåtkomst.
 Månadsprenumerationen förnyas automatiskt om den inte sägs upp minst 24 timmar innan den aktuella perioden tar slut. Betalningen dras från ditt Apple-konto. Du kan hantera eller säga upp den i inställningarna för ditt App Store-konto.
 
 Användarvillkor: https://www.apple.com/legal/internet-services/itunes/dev/stdeula/

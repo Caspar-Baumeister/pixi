@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../services/analytics.dart';
 import '../../app.dart';
 import '../../core/dates.dart';
 import '../../core/stats.dart';
@@ -66,13 +67,18 @@ class _CheckinScreenState extends ConsumerState<CheckinScreen> {
     final notifier = ref.read(appProvider.notifier);
     notifier.markCheckinDone(_date);
     final data = ref.read(appProvider);
+    final count = data.settings.checkinCount;
+    if (count == 1) Analytics.instance.track('first_checkin_completed', {'maps': data.maps.length});
+    Analytics.instance.track('checkin_completed', {'count': count, 'maps': data.maps.length});
     final year = Dates.today().year;
     final streak = data.maps.fold<int>(
         0, (best, m) => max(best, computeStats(m, data.entriesFor(m.id), year).streak));
     Navigator.of(context).pop();
-    // Ask how Pixi feels exactly once: after the first 3-day streak.
-    if (streak >= 3 && !data.settings.reviewAfterStreakShown) {
-      notifier.updateSettings((s) => s.copyWith(reviewAfterStreakShown: true));
+    // Ask how Pixi feels after the first 3-day streak and once more after
+    // the 10th check-in.
+    final firstAsk = streak >= 3 && !data.settings.reviewAfterStreakShown;
+    if (firstAsk || count == 10) {
+      if (firstAsk) notifier.updateSettings((s) => s.copyWith(reviewAfterStreakShown: true));
       Future<void>.delayed(const Duration(milliseconds: 600), () {
         final ctx = rootNavigatorKey.currentContext;
         if (ctx != null && ctx.mounted) FeedbackSheet.show(ctx, kind: FeedbackKind.streak);

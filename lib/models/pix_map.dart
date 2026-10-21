@@ -109,6 +109,7 @@ class Settings {
     this.remindersEnabled = false,
     this.onboardingDone = false,
     this.premium = false,
+    this.legacyFree = false,
     this.feedbackAfterMapShown = false,
     this.feedbackAfterCheckinShown = false,
     this.lastCheckinDate = '',
@@ -122,6 +123,12 @@ class Settings {
   final bool remindersEnabled;
   final bool onboardingDone;
   final bool premium;
+
+  /// Installed while Pixi was free (1.0.0): keeps the old free tier (4 maps,
+  /// paywall with a close button). Everyone else meets the hard paywall.
+  /// Data saved before 1.1.0 has no such key; a finished onboarding there
+  /// means the person used the free version.
+  final bool legacyFree;
   final bool feedbackAfterMapShown;
   final bool feedbackAfterCheckinShown;
   final String lastCheckinDate;
@@ -137,6 +144,7 @@ class Settings {
     bool? remindersEnabled,
     bool? onboardingDone,
     bool? premium,
+    bool? legacyFree,
     bool? feedbackAfterMapShown,
     bool? feedbackAfterCheckinShown,
     String? lastCheckinDate,
@@ -150,6 +158,7 @@ class Settings {
         remindersEnabled: remindersEnabled ?? this.remindersEnabled,
         onboardingDone: onboardingDone ?? this.onboardingDone,
         premium: premium ?? this.premium,
+        legacyFree: legacyFree ?? this.legacyFree,
         feedbackAfterMapShown:
             feedbackAfterMapShown ?? this.feedbackAfterMapShown,
         feedbackAfterCheckinShown:
@@ -166,6 +175,7 @@ class Settings {
         'remindersEnabled': remindersEnabled,
         'onboardingDone': onboardingDone,
         'premium': premium,
+        'legacyFree': legacyFree,
         'feedbackAfterMapShown': feedbackAfterMapShown,
         'feedbackAfterCheckinShown': feedbackAfterCheckinShown,
         'lastCheckinDate': lastCheckinDate,
@@ -180,6 +190,7 @@ class Settings {
         remindersEnabled: (j['remindersEnabled'] as bool?) ?? false,
         onboardingDone: (j['onboardingDone'] as bool?) ?? false,
         premium: (j['premium'] as bool?) ?? false,
+        legacyFree: (j['legacyFree'] as bool?) ?? ((j['onboardingDone'] as bool?) ?? false),
         feedbackAfterMapShown: (j['feedbackAfterMapShown'] as bool?) ?? false,
         feedbackAfterCheckinShown:
             (j['feedbackAfterCheckinShown'] as bool?) ?? false,

@@ -22,7 +22,7 @@ PRIVATNO OD POČETKA
 • Bez računa, bez oglasa. Tvoji podaci ostaju na tvom uređaju
 
 PIXI PREMIUM
-Pixi je besplatan za do 4 karte. Pixi Premium otključava neograničen broj karata i svu statistiku: isprobaj mjesečni plan besplatno 3 dana ili plati jednom za doživotni pristup.
+Pixi Premium otključava cijelu aplikaciju: neograničen broj karata, sve predloške, statistiku i povezanosti, kotač godine i poster. Isprobaj mjesečni plan besplatno 7 dana ili plati jednom za doživotni pristup.
 Mjesečna pretplata automatski se obnavlja ako se ne otkaže najmanje 24 sata prije kraja trenutnog razdoblja. Plaćanje se naplaćuje s tvog Apple računa. Pretplatom možeš upravljati ili je otkazati u postavkama svog App Store računa.
 
 Uvjeti korištenja: https://www.apple.com/legal/internet-services/itunes/dev/stdeula/

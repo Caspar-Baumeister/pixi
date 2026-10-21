@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 import '../../core/links.dart';
 import '../../core/strings.dart';
 import '../../core/theme.dart';
+import '../../services/analytics.dart';
 import '../../services/review_service.dart';
+import '../../services/support_service.dart';
 import '../../widgets/pixi_cat.dart';
 import '../../widgets/ui.dart';
 
@@ -35,21 +36,27 @@ class FeedbackSheet extends StatefulWidget {
 class _FeedbackSheetState extends State<FeedbackSheet> {
   int? _rating; // 0 bad, 1 meh, 2 good
   final _text = TextEditingController();
+  String _choice = 'dismissed';
+
+  @override
+  void initState() {
+    super.initState();
+    Analytics.instance.track('review_ask_shown', {'kind': widget.kind.name});
+  }
 
   @override
   void dispose() {
+    Analytics.instance.track('review_ask_answered', {'choice': _choice});
     _text.dispose();
     super.dispose();
   }
 
   Future<void> _send() async {
     final s = S.of(context);
-    final subject = Uri.encodeComponent('Pixi Feedback (${widget.kind.name})');
-    final body = Uri.encodeComponent('${['👎', '😐', '👍'][_rating ?? 1]}\n\n${_text.text}');
-    final uri = Uri.parse('mailto:$kFeedbackEmail?subject=$subject&body=$body');
-    try {
-      await launchUrl(uri);
-    } catch (_) {}
+    await SupportService.sendFeedback(
+      source: 'review_ask',
+      body: '${['👎', '😐', '👍'][_rating ?? 1]}\n\n${_text.text}',
+    );
     if (mounted) {
       ScaffoldMessenger.maybeOf(context)?.showSnackBar(SnackBar(content: Text(s.t('fb_thanks'))));
       Navigator.of(context).pop();
@@ -125,6 +132,7 @@ class _FeedbackSheetState extends State<FeedbackSheet> {
             onPressed: _rating == null
                 ? null
                 : () {
+                    _choice = ['bad', 'meh', 'good'][_rating!];
                     if (_rating == 2) {
                       Navigator.of(context).pop();
                       ReviewService.ask();
@@ -133,7 +141,13 @@ class _FeedbackSheetState extends State<FeedbackSheet> {
                     }
                   },
           ),
-          SecondaryButton(label: s.t('later'), onPressed: () => Navigator.of(context).pop()),
+          SecondaryButton(
+            label: s.t('later'),
+            onPressed: () {
+              _choice = 'later';
+              Navigator.of(context).pop();
+            },
+          ),
         ],
       ),
     );

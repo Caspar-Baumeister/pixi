@@ -22,7 +22,7 @@ Pixi 是一款“Year in Pixels”风格的心情追踪应用，一只手绘小�
 • 无需账号，没有广告。你的记录只保存在你的设备上
 
 PIXI PREMIUM
-Pixi 最多可免费使用 4 张地图。Pixi Premium 解锁无限地图和全部统计：月度方案可免费试用 3 天，也可以一次性购买，永久使用。
+Pixi Premium 解锁整个应用：无限地图、全部模板、统计与关联、年轮和海报。月度方案可免费试用 7 天，也可以一次性购买，永久使用。
 月度订阅会自动续订，除非在当前周期结束前至少 24 小时取消。费用将从你的 Apple 账户扣除。你可以在 App Store 账户设置中管理或取消订阅。
 
 使用条款：https://www.apple.com/legal/internet-services/itunes/dev/stdeula/

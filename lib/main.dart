@@ -6,6 +6,7 @@ import 'app.dart';
 import 'core/screenshot_mode.dart';
 import 'data/providers.dart';
 import 'data/repository.dart';
+import 'services/analytics.dart';
 import 'services/notification_service.dart';
 
 Future<void> main() async {
@@ -20,6 +21,7 @@ Future<void> main() async {
   final repo = await Repository.open();
   final data = kScreenshotMode ? buildScreenshotData() : await repo.load();
   await NotificationService.instance.init();
+  if (!kScreenshotMode) await Analytics.instance.init();
 
   runApp(
     ProviderScope(

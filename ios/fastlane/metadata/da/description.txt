@@ -22,7 +22,7 @@ PRIVAT FRA START
 • Ingen konto, ingen reklamer. Dine data bliver på din enhed
 
 PIXI PREMIUM
-Pixi er gratis med op til 4 kort. Pixi Premium låser op for ubegrænsede kort og al statistik: prøv månedsabonnementet gratis i 3 dage, eller betal én gang for livslang adgang.
+Pixi Premium låser op for hele appen: ubegrænsede kort, alle skabeloner, statistik og sammenhænge, årshjulet og plakaten. Prøv månedsabonnementet gratis i 7 dage, eller betal én gang for livslang adgang.
 Månedsabonnementet fornyes automatisk, medmindre det opsiges mindst 24 timer før udgangen af den aktuelle periode. Betalingen trækkes fra din Apple-konto. Du kan administrere eller opsige det i indstillingerne for din App Store-konto.
 
 Brugsvilkår: https://www.apple.com/legal/internet-services/itunes/dev/stdeula/

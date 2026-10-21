@@ -97,6 +97,22 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.7.15"
+  device_info_plus:
+    dependency: "direct main"
+    description:
+      name: device_info_plus
+      sha256: b4fed1b2835da9d670d7bed7db79ae2a94b0f5ad6312268158a9b5479abbacdd
+      url: "https://pub.dev"
+    source: hosted
+    version: "12.4.0"
+  device_info_plus_platform_interface:
+    dependency: transitive
+    description:
+      name: device_info_plus_platform_interface
+      sha256: e1ea89119e34903dca74b883d0dd78eb762814f97fb6c76f35e9ff74d261a18f
+      url: "https://pub.dev"
+    source: hosted
+    version: "7.0.3"
   equatable:
     dependency: transitive
     description:
@@ -213,6 +229,22 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
+  http:
+    dependency: transitive
+    description:
+      name: http
+      sha256: "87721a4a50b19c7f1d49001e51409bddc46303966ce89a65af4f4e6004896412"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.6.0"
+  http_parser:
+    dependency: transitive
+    description:
+      name: http_parser
+      sha256: "178d74305e7866013777bab2c3d8726205dc5a4dd935297175b19a23a2e66571"
+      url: "https://pub.dev"
+    source: hosted
+    version: "4.1.2"
   image:
     dependency: transitive
     description:
@@ -317,6 +349,22 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.1.0"
+  package_info_plus:
+    dependency: "direct main"
+    description:
+      name: package_info_plus
+      sha256: "468c26b4254ab01979fa5e4a98cb343ea3631b9acee6f21028997419a80e1a20"
+      url: "https://pub.dev"
+    source: hosted
+    version: "9.0.1"
+  package_info_plus_platform_interface:
+    dependency: transitive
+    description:
+      name: package_info_plus_platform_interface
+      sha256: "202a487f08836a592a6bd4f901ac69b3a8f146af552bbd14407b6b41e1c3f086"
+      url: "https://pub.dev"
+    source: hosted
+    version: "3.2.1"
   path:
     dependency: transitive
     description:
@@ -405,6 +453,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "6.5.2"
+  posthog_flutter:
+    dependency: "direct main"
+    description:
+      name: posthog_flutter
+      sha256: "63c2fd84e4b0ca165967562ef0c9f8a258245d99b45dcff26b32854689c6f90a"
+      url: "https://pub.dev"
+    source: hosted
+    version: "5.56.1"
   purchases_flutter:
     dependency: "direct main"
     description:
@@ -618,6 +674,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "5.15.0"
+  win32_registry:
+    dependency: transitive
+    description:
+      name: win32_registry
+      sha256: "6f1b564492d0147b330dd794fee8f512cec4977957f310f9951b5f9d83618dae"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.1.0"
   xdg_directories:
     dependency: transitive
     description:

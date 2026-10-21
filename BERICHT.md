@@ -62,3 +62,43 @@ hreflang-Paare: Startseiten, Hubs, Support/Hilfe, Vorlage EN/DE, Bullet Journal 
 6. Android: sobald live, Play-Store-Link und `operatingSystem` im JSON-LD ergänzen, FAQ "Android geplant" anpassen.
 7. Falls später PostHog oder ein anderes Analyse-Tool in die App kommt: Datenschutz und die Website-Aussage "no analytics tools" anpassen.
 8. Backlinks: Die kostenlose Vorlage eignet sich für Pinterest (stark bei "year in pixels") und r/bulletjournal.
+
+## 2. Update: Harte Paywall, neue Preise, PostHog (21. Oktober 2026)
+
+### 2.1 Entscheidungen (mit Caspar)
+- Harte Paywall (Modell A) ab 1.1.0: nach dem Onboarding und bei jedem Start ohne Premium, kein Schließen-Button.
+- Bestandsnutzer behalten das alte Modell (4 Maps gratis, Paywall mit X). Erkennung lokal über `Settings.legacyFree` (Daten von 1.0.0 ohne den Schlüssel und mit fertigem Onboarding), zusätzlich RevenueCat `originalApplicationVersion` <= 11 (falls jemand neu installiert; Sandbox/TestFlight melden "1.0" und zählen nie).
+- Preise: Monatsabo 5,99 € mit 7 Tagen gratis, Lifetime 39,99 €. Basisland Deutschland, Apple-Umrechnung für alle 175 Länder. Produkt-IDs und Entitlement bleiben (`pixi_premium_monthly`, `pixi_premium_lifetime`, Entitlement `premium`), weil sie live sind; Name bleibt "Pixi Premium".
+- PostHog im selben Projekt wie Sprout (auf Caspars Wunsch).
+
+### 2.2 App Store Connect (per API, 21.10.)
+- Monatsabo (Apple-ID 6816461663): neuer Preis 5,99 € ab 23.10.2026 (frühestes Datum, das Apple für eine Preisänderung eines freigegebenen Abos annimmt), bestehende Abonnenten behalten ihren Preis (`preserveCurrentPrice`). Apple-Umrechnung: USA 4,99 $, GB 4,99 £, CH 4,00 CHF, JP 800 ¥.
+- Einführungsangebot: alle 175 Drei-Tage-Trials gelöscht und durch 7 Tage gratis (`ONE_WEEK`, `FREE_TRIAL`) ersetzt.
+- Lifetime (6814468194): 39,99 € ab sofort, Basisland DEU.
+
+### 2.3 Code
+- `lib/app.dart`: Gate Onboarding → harte Paywall → App. Wartet bis 4 s auf RevenueCat, damit Zahlende nie die Paywall sehen. Benachrichtigungs-Tap öffnet den Check-in nur mit Zugang.
+- `lib/core/dev_flow.dart`: Debug startet immer mit Onboarding, Paywall mit "Skip (debug)"; `--dart-define=DEV_FLOW=0` schaltet ab. Long-Press auf die Katze der Paywall = Debug-Unlock.
+- Onboarding: alter Plan-Schritt mit verzögertem X entfernt, Events ergänzt.
+- Paywall neu nach Sprout-Aufbau (`features/premium/paywall_screen.dart`, `paywall_story.dart`): Katze, personalisierter Einzeiler (erste Map), 4 Benefits, zwei Plan-Karten, ein CTA im Sticky Footer mit echtem StoreKit-Preis, Restore, Terms, Privacy, automatische Wiederholung beim Laden. Social Proof V1 (138 Studien, 66 Tage, 1 Frage). Sales-Story mit vier animierten Karten (Erinnerung, Benennen, Festhalten, Muster), "After this screen", Katzen-Footer mit @casparbuilds. Weich (mit X) nur für Bestandsnutzer an Map-Limit, Statistik und Einstellungen.
+- Quellen der Story: Fredrickson & Kahneman 1993 (J. Personality and Social Psychology, Peak-End-Regel), Lieberman et al. 2007 (Psychological Science, Putting Feelings Into Words), Harkin et al. 2016 (Psychological Bulletin, 138 Studien, 19.951 Personen), Lally et al. 2010 (European Journal of Social Psychology, Median 66 Tage).
+- Bewertungsfrage zusätzlich nach dem 10. Check-in. Feedback-Mail mit App, Version, Build, iOS, Gerät (`services/support_service.dart`, neu: `package_info_plus`, `device_info_plus`). Versionsnummer in den Einstellungen kommt aus dem Bundle.
+- Test `test/legacy_free_test.dart` für die Bestandserkennung.
+
+### 2.4 PostHog
+- Projekt "Sprout" (282981, eu.posthog.com), Key wie Sprout. Jedes Pixi-Event trägt `$app_name = pixi` und die Super-Property `app = pixi`. IP-Anonymisierung ist im Projekt an.
+- Taxonomie: `onboarding_step_viewed {step, name}`, `onboarding_answer {question: name|first_map|extra_maps, answer}`, `onboarding_first_pixel {level}`, `onboarding_notifications {choice}`, `onboarding_completed`, `paywall_viewed {source, hard}`, `paywall_section_viewed {section}`, `paywall_plan_selected`, `purchase_started/completed/not_completed {plan}`, `restore_tapped`, `paywall_load_failed/recovered`, `paywall_closed`, `first_checkin_completed`, `checkin_completed {count, maps}`, `review_ask_shown/answered`, `feedback_tapped`, `rate_tapped`, `x_profile_tapped`.
+- Debug-Builds senden nur mit `--dart-define=POSTHOG_DEBUG_SEND=true` (dann `debug_build: true`). Am 21.10. so verifiziert: alle Onboarding- und Paywall-Events kamen an.
+- Dashboard "Pixi: Funnel & Conversion" (1043922), gefiltert auf `$app_name = pixi`: Onboarding → Kauf, Paywall-Scrolltiefe, Paywall → Kauf, Kauf → erster Check-in, Käufe nach Plan, erste Map, Erinnerung, Paywall-Quelle, Check-ins und Installationen pro Tag.
+- Sprout-Dashboard (971880) hat jetzt den Dashboard-Filter `$app_name = Sprout`, damit Pixi die Sprout-Zahlen nicht verfälscht. Bei eigenen HogQL-Abfragen immer nach `$app_name` filtern.
+
+### 2.5 Store-Texte und Website
+- Beschreibung in allen 39 Sprachen: Premium-Absatz neu (ganze App, 7 Tage gratis oder Einmalkauf), keine "gratis bis 4 Maps"-Aussage mehr. `release_notes.txt` für 1.1.0 in allen Sprachen.
+- Website (`docs/`, Generator in `~/Code/_seo/preview/pixi_work/build/`, Datenschutz-Quelle jetzt `build/privacy_source.html`): Preismodell, FAQ, "no tracking"-Aussagen ersetzt, Datenschutzerklärung mit PostHog-Abschnitt (Stand 21.10.2026).
+
+### 2.6 Offen
+1. Website veröffentlichen (`git push`), Store-Texte mit der Version hochladen (`fastlane metadata_text`).
+2. ASC-Privacy-Label ergänzen: Usage Data (Product Interaction, Analyse), Diagnostics, nicht verknüpft, kein Tracking.
+3. Im Simulator zeigte StoreKit den neuen Trial noch nicht an (Cache nach der Änderung); in TestFlight prüfen, ob "7 days free" erscheint.
+4. Onboarding hat noch keine Ziel-Frage und kein Video nach Standard; die Demo-Screens (Kreis, Statistik, Zusammenhänge) übernehmen die Rolle des Videos.
+5. Social Proof auf V2 (echte Reviews) umstellen, sobald es Bewertungen gibt.

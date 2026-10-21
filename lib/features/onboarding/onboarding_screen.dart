@@ -3,9 +3,9 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:purchases_flutter/purchases_flutter.dart';
 
 import '../../core/dates.dart';
+import '../../core/dev_flow.dart';
 import '../../core/stats.dart';
 import '../../core/demo_data.dart';
 import '../../core/strings.dart';
@@ -13,9 +13,8 @@ import '../../core/theme.dart';
 import '../../data/providers.dart';
 import '../../models/pix_map.dart';
 import '../../models/templates.dart';
+import '../../services/analytics.dart';
 import '../../services/notification_service.dart';
-import '../../services/premium_service.dart';
-import '../premium/paywall_screen.dart';
 import '../../widgets/circle_year.dart';
 import '../../widgets/hero_ring.dart';
 import '../../widgets/links.dart';
@@ -24,7 +23,7 @@ import '../../widgets/pixel_grid.dart';
 import '../../widgets/pixi_cat.dart';
 import '../../widgets/ui.dart';
 
-enum _Step { hi, name, pick, how, time, circle, stats, corr, plan, go }
+enum _Step { hi, name, pick, how, time, circle, stats, corr, go }
 
 /// Long, personal onboarding (structure modelled on Amy): progress bar,
 /// sketched cat, one question per screen, full-width CTA.
@@ -60,13 +59,10 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
   bool _busy = false;
   bool? _reminderOn;
 
-  // soft paywall
-  List<Package>? _packages;
-  PackageType _plan = PackageType.monthly;
-
   @override
   void initState() {
     super.initState();
+    _trackStep();
     final start = widget.startStep;
     if (start != null) {
       _step = _Step.values.firstWhere((e) => e.name == start, orElse: () => _Step.hi);
@@ -91,7 +87,13 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
       _forward = forward;
       _step = s;
     });
+    _trackStep();
   }
+
+  void _trackStep() => Analytics.instance.track('onboarding_step_viewed', {'step': _index + 1, 'name': _step.name});
+
+  void _answer(String question, String answer) =>
+      Analytics.instance.track('onboarding_answer', {'question': question, 'answer': answer});
 
   void _next() {
     switch (_step) {
@@ -99,13 +101,16 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
         _go(_Step.name);
         break;
       case _Step.name:
+        _answer('name', _name.text.trim().isEmpty ? 'skipped' : 'given');
         _go(_Step.pick);
         break;
       case _Step.pick:
+        _answer('first_map', _pickedTemplate);
         _createFirstMap();
         _go(_Step.how);
         break;
       case _Step.how:
+        Analytics.instance.track('onboarding_first_pixel', {'level': _howLevel ?? -1});
         _go(_Step.time);
         break;
       case _Step.time:
@@ -118,10 +123,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
         _go(_Step.corr);
         break;
       case _Step.corr:
-        _loadPackages();
-        _go(_Step.plan);
-        break;
-      case _Step.plan:
+        _answer('extra_maps', _extraAdded.isEmpty ? 'none' : (_extraAdded.toList()..sort()).join(','));
         _go(_Step.go);
         break;
       case _Step.go:
@@ -172,36 +174,15 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
       );
     }
     await notifier.flush();
+    Analytics.instance.track('onboarding_completed', {'reminder': enabled});
+    if (kDevFlow) DevFlow.onboardingDone.value = true;
     if (mounted) setState(() => _busy = false);
-  }
-
-  Future<void> _loadPackages() async {
-    if (_packages != null) return;
-    final p = await PremiumService.instance.packages();
-    if (mounted) setState(() => _packages = p);
-  }
-
-  Package? _pkg(PackageType t) => _packages?.where((p) => p.packageType == t).firstOrNull;
-
-  Future<void> _buyPlan() async {
-    final pkg = _pkg(_plan);
-    if (pkg == null) {
-      _next();
-      return;
-    }
-    setState(() => _busy = true);
-    final ok = await PremiumService.instance.purchase(pkg);
-    if (!mounted) return;
-    setState(() => _busy = false);
-    if (ok) {
-      ref.read(appProvider.notifier).updateSettings((st) => st.copyWith(premium: true));
-    }
-    _next();
   }
 
   Future<void> _askReminder() async {
     setState(() => _busy = true);
     final ok = await NotificationService.instance.requestPermission();
+    Analytics.instance.track('onboarding_notifications', {'choice': ok ? 'allowed' : 'denied'});
     if (!mounted) return;
     setState(() {
       _busy = false;
@@ -248,13 +229,6 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                       ),
                       const SizedBox(width: 14),
                       Expanded(child: ThinProgress(value: (_index + 1) / _total)),
-                      if (_step == _Step.plan) ...[
-                        const SizedBox(width: 14),
-                        DelayedCloseButton(
-                          key: const ValueKey('plan-close'),
-                          onTap: _busy ? null : _next,
-                        ),
-                      ],
                     ],
                   ),
                 ),
@@ -333,16 +307,11 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                   ? null
                   : () {
                       setState(() => _reminderOn = false);
+                      Analytics.instance.track('onboarding_notifications', {'choice': 'later'});
                       _next();
                     },
             ),
           ],
-        );
-      case _Step.plan:
-        return PrimaryButton(
-          label: PlanPicker.ctaLabel(s, _packages, _plan),
-          loading: _busy,
-          onPressed: _buyPlan,
         );
       case _Step.go:
         return PrimaryButton(
@@ -593,23 +562,6 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                   onTap: () => _toggleExtra(id),
                 ),
             ],
-          ),
-        ]);
-
-      case _Step.plan:
-        return _scroll([
-          const SizedBox(height: 8),
-          _header(
-            s,
-            title: s.t('ob_plan_title'),
-            subtitle: s.t('ob_plan_sub'),
-            illustration: GlowingCat(color: accent, size: 130, catId: 'happy'),
-          ),
-          const SizedBox(height: 18),
-          PlanPicker(
-            packages: _packages,
-            selected: _plan,
-            onSelect: (p) => setState(() => _plan = p),
           ),
         ]);
 
