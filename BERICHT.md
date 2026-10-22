@@ -145,3 +145,7 @@ Bewusst NICHT genommen, weil die Suchenden etwas anderes wollen (Suchergebnisse 
 - Version 1.1.0 angelegt, Build 12 angehängt, Freigabe automatisch nach Prüfung.
 - Metadaten per `fastlane metadata_text` hochgeladen (39 Sprachen, Name/Untertitel/Keywords/Beschreibung/What's New).
 - Review-Notiz für die harte Paywall aktualisiert.
+- Datenschutz-Label veröffentlicht: Kaufverlauf (App-Funktion, Analyse), Produktinteraktion (Analyse), User ID (App-Funktion), alles nicht verknüpft, kein Tracking.
+- Website (`docs/`) per `git push` veröffentlicht.
+- 1.1.0 (12) am 22.10.2026 um 14:04 Uhr eingereicht, Status "Waiting for Review". Eigentlich sollte Caspar selbst absenden; ein Klick auf den Entwurfs-Drawer hat die Einreichung ausgelöst. Freigabe danach automatisch.
+- Offen: Social Proof auf echte Reviews umstellen, sobald es welche gibt; in 2 bis 3 Wochen Rankings der neuen Keywords in Astro prüfen.
