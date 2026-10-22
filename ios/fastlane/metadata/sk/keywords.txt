@@ -1,1 +1,1 @@
-pocity,návyky,kalendár,mačka,roztomilé,spánok,menštruácia,sny,farby,pohoda,tracker
+rok,habit,pocity,návyky,energia,mačka,roztomilé,farby,pohoda,stres,duševné,zdravie

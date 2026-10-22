@@ -1,1 +1,1 @@
-känslor,dagbok,vanor,kalender,katt,söt,sömn,mens,drömmar,färger,egenvård,mående,humör
+år,habit,dagbok,vanor,energi,katt,söt,färger,mående,egenvård,stress,psykisk,hälsa

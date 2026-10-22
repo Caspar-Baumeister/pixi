@@ -1,1 +1,1 @@
-tunteet,päiväkirja,tavat,kalenteri,kissa,söpö,uni,kuukautiset,unet,värit,hyvinvointi
+vuosi,habit,päiväkirja,tavat,energia,kissa,söpö,värit,hyvinvointi,itsehoito,stressi,mielenterveys

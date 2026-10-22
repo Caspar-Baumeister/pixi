@@ -1,1 +1,1 @@
-følelser,dagbog,vaner,kalender,kat,sød,søvn,menstruation,drømme,farver,selvomsorg,trivsel
+år,habit,dagbog,vaner,energi,kat,sød,farver,trivsel,selvomsorg,stress,mental,sundhed

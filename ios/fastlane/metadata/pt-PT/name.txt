@@ -1,1 +1,1 @@
-Pixi: O meu ano em píxeis
+Pixi: Mood Tracker em píxeis

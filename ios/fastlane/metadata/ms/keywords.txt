@@ -1,1 +1,1 @@
-emosi,perasaan,diari,tabiat,kalendar,kucing,comel,tidur,haid,mimpi,warna,estetik,jurnal
+tahun,habit,emosi,diari,tabiat,tenaga,kucing,comel,warna,estetik,stres,cemas,kesihatan,mental

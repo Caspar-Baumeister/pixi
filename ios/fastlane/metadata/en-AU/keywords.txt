@@ -1,1 +1,1 @@
-emotion,feelings,diary,habit,calendar,cat,cute,aesthetic,sleep,period,dream,colour,chart,self,care
+journal,emotion,energy,daily,wellbeing,habit,sleep,simple,cat,cute,self,care,anxiety,stress,color

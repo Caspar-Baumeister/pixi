@@ -105,3 +105,43 @@ hreflang-Paare: Startseiten, Hubs, Support/Hilfe, Vorlage EN/DE, Bullet Journal 
 3. Im Simulator zeigte StoreKit den neuen Trial noch nicht an (Cache nach der Änderung); in TestFlight prüfen, ob "7 days free" erscheint.
 4. Onboarding hat noch keine Ziel-Frage und kein Video nach Standard; die Demo-Screens (Kreis, Statistik, Zusammenhänge) übernehmen die Rolle des Videos.
 5. Social Proof auf V2 (echte Reviews) umstellen, sobald es Bewertungen gibt.
+
+## 3. Update: ASO in allen Sprachen und Einreichung 1.1.0 (22. Oktober 2026)
+
+### 3.1 Recherche (Astro, Popularität/Schwierigkeit)
+Daten aus 14 Stores (us, de, fr, es, mx, it, br, nl, jp, kr, cn, tr, pl, se, ru), alle Kandidaten in Astro bei Pixi getrackt. Wichtigste Funde:
+
+| Store | Keyword | Pop. | Diff. | Absicht geprüft |
+|---|---|---|---|---|
+| us | mood tracker | 53 | 60 | Mood-Tracker-Apps, passt |
+| us | color diary | 17 | 5 | genau Pixi-artige Apps (eine Farbe pro Tag) |
+| us | feelings | 21 | 17 | passt |
+| us | energy tracker | 19 | 15 | Energie-Tracker, passt zur Energie-Map |
+| us | year in pixels | 13 | 9 | Nische, Pixi Rang 234 |
+| de | mood tracker | 47 | 52 | passt |
+| de | stimmungstagebuch | 16 | 39 | passt |
+| fr | mood tracker / mood | 46 / 37 | 39 / 17 | Daylio, DailyBean, passt |
+| fr | journal intime | 57 | 52 | Daylio nutzt es im Titel, passt |
+| es | mood tracker / diario personal | 42 / 44 | 39 / 48 | passt (Daylio-Umfeld) |
+| it | mood / diario segreto | 40 / 30 | 21 / 40 | Daylio heißt in IT "Diario Segreto, Umore" |
+| jp | mood / 気分記録 / 感情日記 | 41 / 15 / 23 | 19 / 38 / 57 | Daylio, MOODA, passt |
+| kr | 감정일기 | 31 | 45 | DailyBean (하루콩), MOODA, passt |
+| cn | 心情日记 / 情绪日记 | 37 / 25 | 59 / 44 | passt |
+| nl | mood tracker / habit tracker | 30 / 66 | 23 / 23 | habit nur im Keyword-Feld |
+
+Bewusst NICHT genommen, weil die Suchenden etwas anderes wollen (Suchergebnisse geprüft):
+- "mood" in Korea: KI-Chat, Kamera, Shopping.
+- schmerztagebuch (de 40), migräne tagebuch, 頭痛 (jp 57), pain tracker: medizinische Schmerz- und Kopfschmerz-Apps mit Arzt-PDF bzw. Wetterprognose.
+- period tracker, cycle tracker, 生理, sleep tracker: Zyklus-Vorhersage und Schlafmessung.
+- dankbarkeitstagebuch, 감사일기, 夢日記, traumtagebuch: Schreib-Tagebücher; Pixi hat keine Notizen.
+
+### 3.2 Neue Metadaten (alle 39 Sprachen, `ios/fastlane/metadata`)
+- Titel: "Pixi: Mood Tracker in Pixels" und Entsprechungen ("Pixi: Mood Tracker in Pixeln", "... en pixels", "... en píxeles", ...). Ohne Marke ging es nicht: "Year in Pixels: Mood Tracker" und "Mood Tracker: Year in Pixels" sind im Store vergeben. Ausnahmen: Türkei "Pixi: Duygu Günlüğü", Japan "Pixi: 気分記録・感情日記", Korea "Pixi: 감정일기 기분 기록 다이어리", China "Pixi心情日记：用像素记录一年".
+- Untertitel: stärkster lokaler Begriff mit passender Absicht, z. B. EN "Year in Color, Feelings Diary", DE "Stimmungstagebuch & Gefühle", FR "Journal intime, humeur, carnet".
+- Keyword-Feld: Long Tail (Gefühle, Energie, Laune, Selbstfürsorge, Katze, Farben, Check-in ...) plus das Jahr-Wort, damit "Jahr in Pixeln" weiter greift. Keine Wiederholung von Titel/Untertitel.
+- Generator mit Prüfungen (Längen, Dubletten, Gedankenstriche): Skript liegt nur im Session-Scratchpad; die Werte stehen in den Metadaten-Dateien.
+
+### 3.3 App Store Connect
+- Version 1.1.0 angelegt, Build 12 angehängt, Freigabe automatisch nach Prüfung.
+- Metadaten per `fastlane metadata_text` hochgeladen (39 Sprachen, Name/Untertitel/Keywords/Beschreibung/What's New).
+- Review-Notiz für die harte Paywall aktualisiert.

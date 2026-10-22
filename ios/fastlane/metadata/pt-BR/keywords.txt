@@ -1,1 +1,1 @@
-sentimentos,hábitos,calendário,gato,fofo,sono,menstruação,sonhos,cores,autocuidado,estética
+ano,diario,sentimentos,hábitos,energia,gato,fofo,cores,bem,estar,autocuidado,ansiedade,pessoal

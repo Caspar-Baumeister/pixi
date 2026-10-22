@@ -1,1 +1,1 @@
-émotions,sentiments,agenda,habitudes,calendrier,chat,mignon,sommeil,règles,rêves,couleurs
+année,émotions,sentiments,habitudes,sommeil,énergie,chat,mignon,couleurs,bien,etre,santé,mentale

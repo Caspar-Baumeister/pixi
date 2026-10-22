@@ -1,1 +1,1 @@
-dispoziție,sentimente,obiceiuri,calendar,pisică,drăguț,somn,ciclu,vise,culori,bunăstare
+an,habit,dispoziție,sentimente,obiceiuri,energie,pisică,drăguț,culori,bunăstare,stres

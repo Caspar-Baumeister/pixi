@@ -1,1 +1,1 @@
-emocije,osjećaji,navike,kalendar,mačka,slatko,san,menstruacija,snovi,boje,tracker
+godina,habit,emocije,osjećaji,navike,energija,mačka,slatko,piksel,stres,mentalno,zdravlje

@@ -1,1 +1,1 @@
-érzelmek,érzések,szokások,naptár,macska,cuki,alvás,menstruáció,álmok,színek,jóllét
+év,habit,napló,érzések,szokások,energia,macska,cuki,színek,jóllét,stressz,mentális,egészség

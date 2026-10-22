@@ -1,1 +1,1 @@
-uczucia,pamiętnik,nawyki,kalendarz,kot,słodki,sen,okres,sny,kolory,samopoczucie
+rok,habit,nawyki,pamiętnik,uczucia,energia,kot,słodki,kolory,samopoczucie,stres,zdrowie,psychiczne

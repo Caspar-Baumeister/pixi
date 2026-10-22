@@ -1,1 +1,1 @@
-suasana hati,perasaan,emosi,diari,kebiasaan,kalender,kucing,lucu,tidur,haid,mimpi,warna,estetik
+tahun,habit,suasana,hati,emosi,diari,kebiasaan,energi,kucing,lucu,warna,estetik,stres,cemas,mental

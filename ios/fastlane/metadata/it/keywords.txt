@@ -1,1 +1,1 @@
-sentimenti,abitudini,calendario,gatto,carino,sonno,ciclo,sogni,colori,benessere,estetica,tracker
+anno,emozioni,sentimenti,abitudini,energia,gatto,carino,colori,benessere,ansia,stress,personale

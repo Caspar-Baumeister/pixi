@@ -1,1 +1,1 @@
-gefühle,gefühlstagebuch,tagebuch,journal,mood,habit,kalender,katze,schlaf,zyklus,traum,farben
+jahr,gefühlstagebuch,tagebuch,diary,laune,emotionen,energie,katze,farben,selbstfürsorge,wohlbefinden
